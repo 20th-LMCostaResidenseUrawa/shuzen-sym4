@@ -53,9 +53,11 @@
         .bar-label { position: absolute; font-size: 8px; white-space: nowrap; transform: rotate(-45deg); font-weight: bold; z-index: 3;}
         .p-label { position: absolute; bottom: -25px; font-size: 9px; color: #64748b; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: right; vertical-align: middle; }
-        th { background: #f1f5f9; color: #475569; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { border: 1px solid #e2e8f0; padding: 10px 8px; text-align: right; vertical-align: middle; }
+        td:last-child { min-width: 150px; } 
+        th { background: #f1f5f9; color: #475569; font-size: 12px; }
+        
         .neg { color: #ef4444; background: #fef2f2; }
         .revised-income { color: #166534; font-weight: bold; }
         h3 { font-size: 14px; margin: 15px 0 10px 0; color: #1e40af; }
@@ -64,19 +66,25 @@
         .event-badge {
             background: #dbeafe;
             color: #1e40af;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 13px;
+            font-weight: bold;
             display: inline-block;
-            margin: 2px 0;
+            margin: 3px 0;
             white-space: nowrap;
+            border: 1px solid #bfdbfe;
+        }
+        .event-badge[style*="background:#d1fae5"] {
+            background: #d1fae5 !important;
+            color: #065f46 !important;
+            border: 1px solid #a7f3d0 !important;
         }
 
         .action-buttons { display: flex; gap: 8px; font-size: 12px; }
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: flex; align-items: center; gap: 4px; }
         .btn-save { background-color: #10b981; }
         .btn-load { background-color: #3b82f6; }
-        /* 💡 画像保存ボタンの色 */
         .btn-img { background-color: #8b5cf6; }
         .btn:hover { opacity: 0.9; }
     </style>
@@ -112,13 +120,42 @@
 
     <h3>🛠 修繕・更新計画（一括反映用）<span class="note">※数値を変更すると下の単年支出データに追加合算されます</span></h3>
     <div class="setup" style="background: #fffbeb;">
-        <div class="input-group"><label>2回目大規模(期/万)</label><div><input type="number" id="repP2" value="27" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="repV2" value="12914" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
-        <div class="input-group"><label>3回目大規模(期/万)</label><div><input type="number" id="repP3" value="40" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="repV3" value="12201" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
-        <div class="input-group"><label>EV更新(期/万)</label><div><input type="number" id="evP" value="25" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="evV" value="3949" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
-        <div class="input-group"><label>駐車場更新(期/万)</label><div><input type="number" id="pkgP" value="29" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="pkgV" value="3630" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
-        <div class="input-group"><label>給排水管更新(期/万)</label><div><input type="number" id="pipeP" value="45" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="pipeV" value="9487" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
+        <div class="input-group">
+            <label>2回目大規模</label>
+            <div style="font-size: 12px;">
+                <input type="number" id="repP2" value="27" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> 期
+                <input type="number" id="repV2" value="12914" style="width:60px; margin-left:4px;" oninput="updateManualAndCalc()" onclick="this.select()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <label>3回目大規模</label>
+            <div style="font-size: 12px;">
+                <input type="number" id="repP3" value="40" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> 期
+                <input type="number" id="repV3" value="12201" style="width:60px; margin-left:4px;" oninput="updateManualAndCalc()" onclick="this.select()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <label>EV更新</label>
+            <div style="font-size: 12px;">
+                <input type="number" id="evP" value="25" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> 期
+                <input type="number" id="evV" value="3949" style="width:60px; margin-left:4px;" oninput="updateManualAndCalc()" onclick="this.select()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <label>駐車場更新</label>
+            <div style="font-size: 12px;">
+                <input type="number" id="pkgP" value="29" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> 期
+                <input type="number" id="pkgV" value="3630" style="width:60px; margin-left:4px;" oninput="updateManualAndCalc()" onclick="this.select()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <label>給排水管更新</label>
+            <div style="font-size: 12px;">
+                <input type="number" id="pipeP" value="45" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> 期
+                <input type="number" id="pipeV" value="9487" style="width:60px; margin-left:4px;" oninput="updateManualAndCalc()" onclick="this.select()"> 万円
+            </div>
+        </div>
     </div>
-
     <h3>📝 各期の単年支出額 (万円)</h3>
     <div id="manualInputs" class="manual-input-area"></div>
 
@@ -229,12 +266,19 @@ function calc() {
         const isRevised = (p >= reviseP);
         
         let eventsHtml = "";
-        if (p === parseInt(document.getElementById('repP2').value) && parseFloat(document.getElementById('repV2').value) > 0) eventsHtml += `<span class="event-badge">2回目大規模</span><br>`;
-        if (p === parseInt(document.getElementById('repP3').value) && parseFloat(document.getElementById('repV3').value) > 0) eventsHtml += `<span class="event-badge">3回目大規模</span><br>`;
-        if (p === parseInt(document.getElementById('evP').value) && parseFloat(document.getElementById('evV').value) > 0) eventsHtml += `<span class="event-badge">EV更新</span><br>`;
-        if (p === parseInt(document.getElementById('pkgP').value) && parseFloat(document.getElementById('pkgV').value) > 0) eventsHtml += `<span class="event-badge">駐車場更新</span><br>`;
-        if (p === parseInt(document.getElementById('pipeP').value) && parseFloat(document.getElementById('pipeV').value) > 0) eventsHtml += `<span class="event-badge">給排水管更新</span><br>`;
-        if (p === reviseP && revisePrice !== currentPrice) eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46;">修繕積立金改定</span><br>`;
+        
+        const valRep2 = parseFloat(document.getElementById('repV2').value) || 0;
+        const valRep3 = parseFloat(document.getElementById('repV3').value) || 0;
+        const valEv = parseFloat(document.getElementById('evV').value) || 0;
+        const valPkg = parseFloat(document.getElementById('pkgV').value) || 0;
+        const valPipe = parseFloat(document.getElementById('pipeV').value) || 0;
+
+        if (p === parseInt(document.getElementById('repP2').value) && valRep2 > 0) eventsHtml += `<span class="event-badge">2回目大規模 ${valRep2.toLocaleString()}万円</span><br>`;
+        if (p === parseInt(document.getElementById('repP3').value) && valRep3 > 0) eventsHtml += `<span class="event-badge">3回目大規模 ${valRep3.toLocaleString()}万円</span><br>`;
+        if (p === parseInt(document.getElementById('evP').value) && valEv > 0) eventsHtml += `<span class="event-badge">EV更新 ${valEv.toLocaleString()}万円</span><br>`;
+        if (p === parseInt(document.getElementById('pkgP').value) && valPkg > 0) eventsHtml += `<span class="event-badge">駐車場更新 ${valPkg.toLocaleString()}万円</span><br>`;
+        if (p === parseInt(document.getElementById('pipeP').value) && valPipe > 0) eventsHtml += `<span class="event-badge">給排水管更新 ${valPipe.toLocaleString()}万円</span><br>`;
+        if (p === reviseP && revisePrice !== currentPrice) eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46;">修繕積立金改定 (${revisePrice.toLocaleString()}円/㎡)</span><br>`;
 
         const row = tbody.insertRow();
         if (isNeg) row.className = 'neg';
@@ -269,7 +313,6 @@ function calc() {
     }
 }
 
-// データ保存
 function saveData() {
     const data = {
         startP: document.getElementById('startP').value,
@@ -301,7 +344,6 @@ function saveData() {
     URL.revokeObjectURL(url);
 }
 
-// データ読込
 function loadData(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -342,20 +384,16 @@ function loadData(event) {
     event.target.value = '';
 }
 
-// 💡 画像として保存する関数
 function saveAsImage() {
     const targetElement = document.getElementById("capture-area");
     
-    // 画像化中に少し画面がチカッとしないように設定
     html2canvas(targetElement, {
-        scale: 2, // 高画質で出力
+        scale: 2, 
         useCORS: true,
-        backgroundColor: "#f0f4f8" // 背景色を合わせる
+        backgroundColor: "#f0f4f8"
     }).then(canvas => {
-        // 画像データ(Base64)を取得
         const imgData = canvas.toDataURL("image/png");
         
-        // ダウンロード用のリンクを作成
         const link = document.createElement("a");
         link.download = "修繕シミュレーション結果.png";
         link.href = imgData;
