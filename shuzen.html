@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>LMコスタレジデンス浦和・修繕積立金シミュレーター</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0f4f8; padding: 20px; font-size: 13px; color: #333; line-height: 1.4; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        h2 { border-left: 5px solid #2563eb; padding-left: 10px; margin: 0; font-size: 18px; }
+        
+        .setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+            padding: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+
+        .manual-input-area {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr); 
+            gap: 10px 6px;
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .manual-col { display: flex; flex-direction: column; text-align: center; }
+        .manual-col label { font-size: 9px; margin-bottom: 2px; }
+        .manual-col input { padding: 4px; font-size: 11px; text-align: center; width: 100%; box-sizing: border-box; }
+
+        .chart-container { position: relative; height: 350px; margin: 60px 0 40px 0; background: #fff; border-left: 1px solid #cbd5e1; }
+        .zero-line { position: absolute; left: 0; width: 100%; height: 2px; background: #475569; z-index: 2; }
+        .chart-area { display: flex; height: 100%; align-items: flex-start; padding: 0 5px; gap: 2px; }
+        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; height: 100%; }
+        .bar { width: 90%; position: absolute; transition: all 0.2s ease; }
+        .bar.plus { background: #3b82f6; border-radius: 2px 2px 0 0; }
+        .bar.minus { background: #ef4444; border-radius: 0 0 2px 2px; }
+        .bar-label { position: absolute; font-size: 8px; white-space: nowrap; transform: rotate(-45deg); font-weight: bold; z-index: 3;}
+        .p-label { position: absolute; bottom: -25px; font-size: 9px; color: #64748b; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: right; vertical-align: middle; }
+        th { background: #f1f5f9; color: #475569; font-size: 11px; }
+        .neg { color: #ef4444; background: #fef2f2; }
+        .revised-income { color: #166534; font-weight: bold; }
+        h3 { font-size: 14px; margin: 15px 0 10px 0; color: #1e40af; }
+        .note { font-size: 11px; color: #ef4444; font-weight: normal; margin-left: 10px;}
+
+        .event-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            display: inline-block;
+            margin: 2px 0;
+            white-space: nowrap;
+        }
+
+        .action-buttons { display: flex; gap: 8px; font-size: 12px; }
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .btn-save { background-color: #10b981; }
+        .btn-load { background-color: #3b82f6; }
+        /* 💡 画像保存ボタンの色 */
+        .btn-img { background-color: #8b5cf6; }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="capture-area">
+    <div class="header-area">
+        <h2>🏢 LMコスタレジデンス浦和・修繕積立金シミュレーター</h2>
+        
+        <div class="action-buttons" data-html2canvas-ignore="true">
+            <button class="btn btn-save" onclick="saveData()">💾 データ保存</button>
+            <button class="btn btn-load" onclick="document.getElementById('fileInput').click()">📂 データ読込</button>
+            <input type="file" id="fileInput" style="display:none" accept=".json" onchange="loadData(event)">
+            
+            <button class="btn btn-img" onclick="saveAsImage()">📷 画像として保存</button>
+        </div>
+    </div>
+    
+    <div class="setup">
+        <div class="input-group"><label>開始期（現在）</label><input type="number" id="startP" value="21" oninput="initManualInputs(); calc();" onclick="this.select()"></div>
+        <div class="input-group"><label>繰越金残高 (万円)</label><input type="number" id="bal" value="3470" oninput="calc()" onclick="this.select()"></div>
+        <div class="input-group"><label>現在の積立単価 (円/㎡)</label><input type="number" id="price" value="450" oninput="calc()" onclick="this.select()"></div>
+        
+        <div class="input-group" style="background: #ecfdf5; border-radius: 4px; padding: 4px;">
+            <label style="color: #059669;">修繕積立金改定</label>
+            <div>
+                <input type="number" id="reviseP" value="23" style="width:40px" oninput="calc()" onclick="this.select()"> 期から
+                <input type="number" id="reviseV" value="520" style="width:60px" oninput="calc()" onclick="this.select()"> 円に
+            </div>
+        </div>
+    </div>
+
+    <h3>🛠 修繕・更新計画（一括反映用）<span class="note">※数値を変更すると下の単年支出データに追加合算されます</span></h3>
+    <div class="setup" style="background: #fffbeb;">
+        <div class="input-group"><label>2回目大規模(期/万)</label><div><input type="number" id="repP2" value="27" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="repV2" value="12914" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
+        <div class="input-group"><label>3回目大規模(期/万)</label><div><input type="number" id="repP3" value="40" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="repV3" value="12201" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
+        <div class="input-group"><label>EV更新(期/万)</label><div><input type="number" id="evP" value="25" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="evV" value="3949" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
+        <div class="input-group"><label>駐車場更新(期/万)</label><div><input type="number" id="pkgP" value="29" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="pkgV" value="3630" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
+        <div class="input-group"><label>給排水管更新(期/万)</label><div><input type="number" id="pipeP" value="45" style="width:40px" oninput="updateManualAndCalc()" onclick="this.select()"> <input type="number" id="pipeV" value="9487" style="width:60px" oninput="updateManualAndCalc()" onclick="this.select()"></div></div>
+    </div>
+
+    <h3>📝 各期の単年支出額 (万円)</h3>
+    <div id="manualInputs" class="manual-input-area"></div>
+
+    <div class="chart-container">
+        <div id="zeroLine" class="zero-line"></div>
+        <div id="chart" class="chart-area"></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th style="text-align:center">期</th><th>年収入(万)</th><th>年支出(万)</th><th>期末残高(万)</th><th style="text-align:left">主な工事</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</div>
+
+<script>
+const PERIODS = 30; 
+const AREA_FIXED = 1887; 
+
+let initialExpenses = [
+    550.6, 253, 0, 0, 520, 55, 386, 286, 0, 1644.5, 
+    1100, 0, 1001.5, 55, 1067, 286.6, 99, 385, 61.6, 0, 
+    0, 154, 77, 187, 0, 2222, 0, 649.5, 198, 0
+];
+
+let expenses = [...initialExpenses];
+
+function initManualInputs() {
+    const startP = parseInt(document.getElementById('startP').value) || 0;
+    const container = document.getElementById('manualInputs');
+    container.innerHTML = "";
+    for (let i = 0; i < PERIODS; i++) {
+        const div = document.createElement('div');
+        div.className = 'manual-col';
+        div.innerHTML = `<label>${startP + i}期</label><input type="number" id="exp_${i}" value="${expenses[i] || 0}" oninput="syncFromManual(${i})" onclick="this.select()">`;
+        container.appendChild(div);
+    }
+}
+
+function updateManualAndCalc() {
+    expenses = [...initialExpenses]; 
+    const startP = parseInt(document.getElementById('startP').value) || 0;
+    
+    const config = [
+        { p: parseInt(document.getElementById('repP2').value), v: parseFloat(document.getElementById('repV2').value) || 0 },
+        { p: parseInt(document.getElementById('repP3').value), v: parseFloat(document.getElementById('repV3').value) || 0 },
+        { p: parseInt(document.getElementById('evP').value), v: parseFloat(document.getElementById('evV').value) || 0 },
+        { p: parseInt(document.getElementById('pkgP').value), v: parseFloat(document.getElementById('pkgV').value) || 0 },
+        { p: parseInt(document.getElementById('pipeP').value), v: parseFloat(document.getElementById('pipeV').value) || 0 }
+    ];
+    
+    config.forEach(c => {
+        const idx = c.p - startP;
+        if (idx >= 0 && idx < PERIODS) expenses[idx] += c.v;
+    });
+    for (let i = 0; i < PERIODS; i++) {
+        const input = document.getElementById(`exp_${i}`);
+        if (input) input.value = Math.round(expenses[i] * 10) / 10;
+    }
+    calc();
+}
+
+function syncFromManual(idx) {
+    expenses[idx] = parseFloat(document.getElementById(`exp_${idx}`).value) || 0;
+    initialExpenses[idx] = expenses[idx]; 
+    calc();
+}
+
+function calc() {
+    const startP = parseInt(document.getElementById('startP').value) || 0;
+    let bal = parseFloat(document.getElementById('bal').value) || 0;
+    
+    const currentPrice = parseFloat(document.getElementById('price').value) || 0;
+    const reviseP = parseInt(document.getElementById('reviseP').value) || 999;
+    const revisePrice = parseFloat(document.getElementById('reviseV').value) || 0;
+
+    const chart = document.getElementById('chart');
+    const tbody = document.getElementById('tbody');
+    const zeroLine = document.getElementById('zeroLine');
+    chart.innerHTML = ""; tbody.innerHTML = "";
+
+    function getIncomeY(p) {
+        const pPrice = (p >= reviseP) ? revisePrice : currentPrice;
+        return (pPrice * AREA_FIXED * 12) / 10000;
+    }
+
+    let maxB = 0, minB = 0, tempB = bal;
+    for (let i = 0; i < PERIODS; i++) {
+        tempB = tempB + getIncomeY(startP + i) - (expenses[i] || 0);
+        maxB = Math.max(maxB, tempB); 
+        minB = Math.min(minB, tempB);
+    }
+    maxB = Math.max(maxB, 1000);
+    minB = Math.min(minB, 0); 
+    
+    const range = maxB - minB;
+    const zeroPos = range === 0 ? 50 : (maxB / range) * 100; 
+    zeroLine.style.top = zeroPos + "%";
+
+    let currentBal = bal;
+    for (let i = 0; i < PERIODS; i++) {
+        const p = startP + i;
+        const exp = expenses[i] || 0;
+        const incomeY = getIncomeY(p);
+        currentBal = currentBal + incomeY - exp;
+        const isNeg = currentBal < 0;
+        const isRevised = (p >= reviseP);
+        
+        let eventsHtml = "";
+        if (p === parseInt(document.getElementById('repP2').value) && parseFloat(document.getElementById('repV2').value) > 0) eventsHtml += `<span class="event-badge">2回目大規模</span><br>`;
+        if (p === parseInt(document.getElementById('repP3').value) && parseFloat(document.getElementById('repV3').value) > 0) eventsHtml += `<span class="event-badge">3回目大規模</span><br>`;
+        if (p === parseInt(document.getElementById('evP').value) && parseFloat(document.getElementById('evV').value) > 0) eventsHtml += `<span class="event-badge">EV更新</span><br>`;
+        if (p === parseInt(document.getElementById('pkgP').value) && parseFloat(document.getElementById('pkgV').value) > 0) eventsHtml += `<span class="event-badge">駐車場更新</span><br>`;
+        if (p === parseInt(document.getElementById('pipeP').value) && parseFloat(document.getElementById('pipeV').value) > 0) eventsHtml += `<span class="event-badge">給排水管更新</span><br>`;
+        if (p === reviseP && revisePrice !== currentPrice) eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46;">修繕積立金改定</span><br>`;
+
+        const row = tbody.insertRow();
+        if (isNeg) row.className = 'neg';
+        
+        const incomeTdClass = isRevised && revisePrice !== currentPrice ? 'revised-income' : '';
+        
+        row.innerHTML = `
+            <td style="text-align:center">${p}</td>
+            <td class="${incomeTdClass}">${Math.round(incomeY).toLocaleString()}</td>
+            <td>${exp > 0 ? exp.toLocaleString() : '-'}</td>
+            <td style="font-weight:bold">${Math.round(currentBal).toLocaleString()}</td>
+            <td style="text-align:left; line-height:1;">${eventsHtml}</td>
+        `;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bar-wrapper';
+        const barH = range === 0 ? 0 : (Math.abs(currentBal) / range) * 100;
+        const bar = document.createElement('div');
+        bar.className = 'bar ' + (isNeg ? 'minus' : 'plus');
+        bar.style.height = barH + "%";
+        
+        if (!isNeg) {
+            bar.style.bottom = (100 - zeroPos) + "%";
+            wrapper.innerHTML += `<div class="bar-label" style="bottom:calc(${(100-zeroPos)+barH}% + 5px); color:#333;">${Math.round(currentBal)}</div>`;
+        } else {
+            bar.style.top = zeroPos + "%";
+            wrapper.innerHTML += `<div class="bar-label" style="top:calc(${zeroPos+barH}% + 5px); color:#ef4444;">${Math.round(currentBal)}</div>`;
+        }
+        wrapper.appendChild(bar);
+        wrapper.innerHTML += `<div class="p-label">${p}</div>`;
+        chart.appendChild(wrapper);
+    }
+}
+
+// データ保存
+function saveData() {
+    const data = {
+        startP: document.getElementById('startP').value,
+        bal: document.getElementById('bal').value,
+        price: document.getElementById('price').value,
+        reviseP: document.getElementById('reviseP').value,
+        reviseV: document.getElementById('reviseV').value,
+        repP2: document.getElementById('repP2').value,
+        repV2: document.getElementById('repV2').value,
+        repP3: document.getElementById('repP3').value,
+        repV3: document.getElementById('repV3').value,
+        evP: document.getElementById('evP').value,
+        evV: document.getElementById('evV').value,
+        pkgP: document.getElementById('pkgP').value,
+        pkgV: document.getElementById('pkgV').value,
+        pipeP: document.getElementById('pipeP').value,
+        pipeV: document.getElementById('pipeV').value,
+        initialExpenses: initialExpenses
+    };
+    
+    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "simulation_data.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// データ読込
+function loadData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            document.getElementById('startP').value = data.startP || 21;
+            document.getElementById('bal').value = data.bal || 3470;
+            document.getElementById('price').value = data.price || 450;
+            document.getElementById('reviseP').value = data.reviseP || 23;
+            document.getElementById('reviseV').value = data.reviseV || 520;
+            
+            document.getElementById('repP2').value = data.repP2 || 27;
+            document.getElementById('repV2').value = data.repV2 || 12914;
+            document.getElementById('repP3').value = data.repP3 || 40;
+            document.getElementById('repV3').value = data.repV3 || 12201;
+            document.getElementById('evP').value = data.evP || 25;
+            document.getElementById('evV').value = data.evV || 3949;
+            document.getElementById('pkgP').value = data.pkgP || 29;
+            document.getElementById('pkgV').value = data.pkgV || 3630;
+            document.getElementById('pipeP').value = data.pipeP || 45;
+            document.getElementById('pipeV').value = data.pipeV || 9487;
+            
+            if (data.initialExpenses && data.initialExpenses.length === PERIODS) {
+                initialExpenses = data.initialExpenses;
+            }
+            
+            initManualInputs();
+            updateManualAndCalc();
+        } catch (error) {
+            alert('データの読み込みに失敗しました。ファイル形式が正しいか確認してください。');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+// 💡 画像として保存する関数
+function saveAsImage() {
+    const targetElement = document.getElementById("capture-area");
+    
+    // 画像化中に少し画面がチカッとしないように設定
+    html2canvas(targetElement, {
+        scale: 2, // 高画質で出力
+        useCORS: true,
+        backgroundColor: "#f0f4f8" // 背景色を合わせる
+    }).then(canvas => {
+        // 画像データ(Base64)を取得
+        const imgData = canvas.toDataURL("image/png");
+        
+        // ダウンロード用のリンクを作成
+        const link = document.createElement("a");
+        link.download = "修繕シミュレーション結果.png";
+        link.href = imgData;
+        link.click();
+    }).catch(err => {
+        console.error("画像の生成に失敗しました:", err);
+        alert("画像の生成に失敗しました。");
+    });
+}
+
+window.onload = () => { initManualInputs(); updateManualAndCalc(); };
+</script>
+</body>
+</html>
