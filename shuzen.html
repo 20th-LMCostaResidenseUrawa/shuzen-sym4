@@ -53,6 +53,7 @@
         .year-col { background: #f1f5f9; font-weight: bold; text-align: center; color: #475569; }
         
         h3 { font-size: 14px; margin: 15px 0 10px 0; color: #1e40af; border-bottom: 1px solid #dbeafe; padding-bottom: 5px; }
+        .note { font-size: 11px; color: #ef4444; font-weight: normal; margin-left: 10px;}
 
         .event-badge {
             background: #dbeafe;
@@ -110,7 +111,7 @@
                 <li><strong>積立金改定プラン：</strong> 将来の値上げ予定がある場合、「何期」から「何円/㎡」にするかを設定すると、表とグラフに反映されます。</li>
             </ul>
 
-            <h4>2. 主要な修繕・更新計画</h4>
+            <h4>2. 主要な修繕の時期とコスト</h4>
             <ul>
                 <li>大規模修繕やエレベーター更新などの大きな工事の<strong>「実施期」</strong>と<strong>「金額（万円）」</strong>を入力します。</li>
                 <li>ここで入力した金額は、該当する期の「単年支出」として自動的に加算されます。</li>
@@ -144,7 +145,7 @@
     </div>
     
     <div class="setup">
-        <div class="input-group"><label>開始期 (2026年想定)</label><input type="number" id="startP" value="21" oninput="initManualInputs(); updateManualAndCalc();"></div>
+        <div class="input-group"><label>開始期</label><input type="number" id="startP" value="21" oninput="initManualInputs(); updateManualAndCalc();"></div>
         <div class="input-group"><label>期首繰越金残高 (万円)</label><input type="number" id="bal" value="3470" oninput="calc()"></div>
         <div class="input-group"><label>現在の積立単価 (円/㎡)</label><input type="number" id="price" value="450" oninput="calc()"></div>
         <div class="input-group" style="background: #ecfdf5; border-radius: 4px; padding: 4px;">
@@ -156,7 +157,7 @@
         </div>
     </div>
 
-    <h3>🛠 主要な修繕・更新計画</h3>
+    <h3>🛠 主要な修繕の時期とコスト<span class="note">※コストは概算額に消費税10％を加えたものを入力する</span></h3>
     <div class="setup" style="background: #fffbeb;">
         <div class="input-group"><label>2回目大規模修繕</label><div><input type="number" id="repP2" value="27" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV2" value="12914" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
         <div class="input-group"><label>3回目大規模修繕</label><div><input type="number" id="repP3" value="40" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV3" value="12201" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
@@ -165,7 +166,7 @@
         <div class="input-group"><label>給排水管更新</label><div><input type="number" id="pipeP" value="45" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="pipeV" value="9487" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
     </div>
 
-    <h3>📝 各期の単年支出内訳 (万円)</h3>
+    <h3>📝 各期の単年支出内訳 (万円)<span class="note">※数字は長期修繕計画総括表の支出年度合計から入力する</span></h3>
     <div id="manualInputs" class="manual-input-area"></div>
 
     <div class="chart-container">
@@ -200,14 +201,12 @@ const AREA_FIXED = 1887;
 const BASE_YEAR = 2026;
 const BASE_PERIOD = 21;
 
-// ▼ 配列形式を廃止し、期(キー)と金額(バリュー)のセット（オブジェクト）に変更 ▼
 let baseExpensesMap = {
     21: 550.6, 22: 253, 23: 0, 24: 0, 25: 520, 26: 55, 27: 386, 28: 286, 29: 0, 30: 1644.5, 
     31: 1100, 32: 0, 33: 1001.5, 34: 55, 35: 1067, 36: 286.6, 37: 99, 38: 385, 39: 61.6, 40: 0, 
     41: 0, 42: 154, 43: 77, 44: 187, 45: 0, 46: 2222, 47: 0, 48: 649.5, 49: 198, 50: 0
 };
 
-// 計算に使うための30期分の一時配列
 let currentPeriodExpenses = [];
 
 function closeModal(event) {
@@ -236,10 +235,8 @@ function updateManualAndCalc() {
     for (let i = 0; i < PERIODS; i++) {
         const p = startP + i;
         
-        // オブジェクトに設定されていない期は自動で「0」になる
         let total = baseExpensesMap[p] !== undefined ? baseExpensesMap[p] : 0;
         
-        // 該当する期の工事金額を加算
         if (p === parseInt(document.getElementById('repP2').value)) total += parseFloat(document.getElementById('repV2').value) || 0;
         if (p === parseInt(document.getElementById('repP3').value)) total += parseFloat(document.getElementById('repV3').value) || 0;
         if (p === parseInt(document.getElementById('evP').value)) total += parseFloat(document.getElementById('evV').value) || 0;
@@ -248,7 +245,6 @@ function updateManualAndCalc() {
         
         currentPeriodExpenses[i] = total;
         
-        // 入力ボックスの表示を更新
         const input = document.getElementById(`exp_${i}`);
         if (input) input.value = Math.round(total * 10) / 10;
     }
@@ -267,7 +263,6 @@ function syncFromManual(idx) {
     if (p === parseInt(document.getElementById('pkgP').value)) largeRepairs += parseFloat(document.getElementById('pkgV').value) || 0;
     if (p === parseInt(document.getElementById('pipeP').value)) largeRepairs += parseFloat(document.getElementById('pipeV').value) || 0;
     
-    // 入力値から工事費を引いたものを「その期の基礎支出」として記憶する
     baseExpensesMap[p] = typedVal - largeRepairs;
     currentPeriodExpenses[idx] = typedVal;
     
@@ -365,7 +360,6 @@ function calc() {
     }
 }
 
-// データ保存・読込処理も新しいMap方式に対応
 function saveData() {
     const data = {
         startP: document.getElementById('startP').value,
@@ -406,7 +400,6 @@ function loadData(event) {
             document.getElementById('pkgP').value = data.pkgP;   document.getElementById('pkgV').value = data.pkgV;
             document.getElementById('pipeP').value = data.pipeP; document.getElementById('pipeV').value = data.pipeV;
             
-            // 古いJSONファイル（配列形式）も読み込めるように互換性をもたせる
             if (data.baseExpensesMap) {
                 baseExpensesMap = data.baseExpensesMap;
             } else if (data.initialExpenses) {
