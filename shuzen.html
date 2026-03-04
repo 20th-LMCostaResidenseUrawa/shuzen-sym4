@@ -21,7 +21,6 @@
 
         .manual-input-area {
             display: grid;
-            /* 修正箇所: 1行に10個（10列）表示するように変更 */
             grid-template-columns: repeat(10, 1fr); 
             gap: 10px 6px;
             background: #fff;
@@ -44,10 +43,11 @@
         .bar-label { position: absolute; font-size: 8px; white-space: nowrap; transform: rotate(-45deg); font-weight: bold; z-index: 3;}
         .p-label { position: absolute; bottom: -25px; font-size: 9px; color: #64748b; white-space: nowrap; }
 
-        /* テーブル全体のバランス調整 */
+        /* ▼▼▼ テーブル内の文字を中央揃えに修正 ▼▼▼ */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; table-layout: fixed; }
-        th, td { border: 1px solid #e2e8f0; padding: 8px 4px; text-align: right; vertical-align: middle; overflow: hidden; }
-        th { background: #f1f5f9; color: #475569; font-size: 11px; text-align: center; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px 4px; text-align: center; vertical-align: middle; overflow: hidden; }
+        th { background: #f1f5f9; color: #475569; font-size: 11px; }
+        /* ▲▲▲ 修正ここまで ▲▲▲ */
         
         .neg { color: #ef4444; background: #fef2f2; }
         .revised-val { color: #166534; font-weight: bold; background: #f0fdf4; }
@@ -74,14 +74,70 @@
         .btn-save { background-color: #10b981; }
         .btn-load { background-color: #3b82f6; }
         .btn-img { background-color: #8b5cf6; }
+        .btn-help { background-color: #f59e0b; }
+        .btn:hover { opacity: 0.9; }
+
+        /* モーダル（使い方ガイド）用のCSS */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 1000; backdrop-filter: blur(2px);
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 600px; margin: 5vh auto;
+            padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative; max-height: 85vh; overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute; top: 15px; right: 15px; font-size: 24px; color: #64748b;
+            cursor: pointer; line-height: 1; text-decoration: none;
+        }
+        .modal-close:hover { color: #ef4444; }
+        .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; }
+        .modal-body ul { padding-left: 20px; margin-bottom: 15px; }
+        .modal-body li { margin-bottom: 8px; }
     </style>
 </head>
 <body>
+
+<div id="helpModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <a class="modal-close" onclick="closeModal(event)">&times;</a>
+        <h2 style="border-left: 5px solid #f59e0b; padding-left: 10px; margin-bottom: 10px;">📖 シミュレーターの使い方</h2>
+        <div class="modal-body">
+            <p>このツールは、LMコスタレジデンス浦和の修繕積立金の将来推移をシミュレーションするためのものです。</p>
+            
+            <h4>1. 基本設定（画面上部）</h4>
+            <ul>
+                <li><strong>開始期・繰越金・積立単価：</strong> 現在の状況を入力します。</li>
+                <li><strong>積立金改定プラン：</strong> 将来の値上げ予定がある場合、「何期」から「何円/㎡」にするかを設定すると、表とグラフに反映されます。</li>
+            </ul>
+
+            <h4>2. 主要な修繕・更新計画</h4>
+            <ul>
+                <li>大規模修繕やエレベーター更新などの大きな工事の<strong>「実施期」</strong>と<strong>「金額（万円）」</strong>を入力します。</li>
+                <li>ここで入力した金額は、該当する期の「単年支出」として自動的に加算されます。</li>
+            </ul>
+
+            <h4>3. 単年支出内訳の微調整</h4>
+            <ul>
+                <li>「各期の単年支出内訳」のボックスの数値を直接書き換えることで、細かい支出額（日常修繕費など）を個別に調整できます。</li>
+            </ul>
+
+            <h4>4. データの保存と出力（右上ボタン）</h4>
+            <ul>
+                <li>💾 <strong>データ保存：</strong> 現在の条件をファイル（JSON）として保存します。</li>
+                <li>📂 <strong>読込：</strong> 保存したファイルを読み込み、シミュレーションを再開できます。</li>
+                <li>📷 <strong>画像保存：</strong> 現在の画面全体を画像（PNG）としてダウンロードします。理事会での報告資料等にご活用ください。</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
 <div class="container" id="capture-area">
     <div class="header-area">
         <h2>🏢 LMコスタレジデンス浦和 修繕積立金シミュレーター</h2>
         <div class="action-buttons" data-html2canvas-ignore="true">
+            <button class="btn btn-help" onclick="document.getElementById('helpModal').style.display='block'">📖 使い方</button>
             <button class="btn btn-save" onclick="saveData()">💾 データ保存</button>
             <button class="btn btn-load" onclick="document.getElementById('fileInput').click()">📂 読込</button>
             <input type="file" id="fileInput" style="display:none" accept=".json" onchange="loadData(event)">
@@ -127,15 +183,15 @@
             <tr>
                 <th>西暦</th>
                 <th>会計期</th>
-                <th>年収入</th>
-                <th class="cum-col">累計収入</th>
-                <th>年支出</th>
-                <th class="cum-col">累計支出</th>
-                <th>期末残高</th>
-                <th style="text-align:center">主な修繕</th>
-                <th>単価</th>
+                <th>単年収入（万円）</th>
+                <th class="cum-col">累計収入（万円）</th>
+                <th>単年支出（万円）</th>
+                <th class="cum-col">累計支出（万円）</th>
+                <th>期末残高（万円）</th>
+                <th>主な修繕</th>
+                <th>単価（円/㎡）</th>
             </tr>
-        </thead>
+            </thead>
         <tbody id="tbody"></tbody>
     </table>
 </div>
@@ -153,6 +209,11 @@ let initialExpenses = [
 ];
 
 let expenses = [...initialExpenses];
+
+function closeModal(event) {
+    if (event) event.preventDefault();
+    document.getElementById('helpModal').style.display = 'none';
+}
 
 function initManualInputs() {
     const startP = parseInt(document.getElementById('startP').value) || BASE_PERIOD;
@@ -235,7 +296,6 @@ function calc() {
         currentBal = currentBal + incomeY - exp;
 
         let eventsHtml = "";
-        /* 修正箇所: labelを「大規模修繕」に変更しました */
         const configKeys = [
             {id:'repP2', valId:'repV2', label:'大規模修繕'},
             {id:'repP3', valId:'repV3', label:'大規模修繕'},
@@ -253,16 +313,17 @@ function calc() {
         const row = tbody.insertRow();
         if (currentBal < 0) row.className = 'neg';
         
+        // inlineの style="text-align:center;" 等はCSSで統一されたため削除しています
         row.innerHTML = `
             <td class="year-col">${year}</td>
-            <td style="text-align:center">${p}期</td>
+            <td>${p}期</td>
             <td>${Math.round(incomeY).toLocaleString()}</td>
             <td class="cum-col">${Math.round(cumIncome).toLocaleString()}</td>
             <td>${exp > 0 ? Math.round(exp).toLocaleString() : '-'}</td>
             <td class="cum-col">${Math.round(cumExp).toLocaleString()}</td>
             <td style="font-weight:bold">${Math.round(currentBal).toLocaleString()}</td>
-            <td style="text-align:center;">${eventsHtml}</td>
-            <td class="${p >= reviseP && revisePrice !== currentPrice ? 'revised-val' : ''}" style="text-align:center">${unitPrice}</td>
+            <td>${eventsHtml}</td>
+            <td class="${p >= reviseP && revisePrice !== currentPrice ? 'revised-val' : ''}">${unitPrice}</td>
         `;
 
         const wrapper = document.createElement('div');
