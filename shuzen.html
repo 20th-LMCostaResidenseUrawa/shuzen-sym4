@@ -43,11 +43,9 @@
         .bar-label { position: absolute; font-size: 8px; white-space: nowrap; transform: rotate(-45deg); font-weight: bold; z-index: 3;}
         .p-label { position: absolute; bottom: -25px; font-size: 9px; color: #64748b; white-space: nowrap; }
 
-        /* ▼▼▼ テーブル内の文字を中央揃えに修正 ▼▼▼ */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; table-layout: fixed; }
         th, td { border: 1px solid #e2e8f0; padding: 8px 4px; text-align: center; vertical-align: middle; overflow: hidden; }
         th { background: #f1f5f9; color: #475569; font-size: 11px; }
-        /* ▲▲▲ 修正ここまで ▲▲▲ */
         
         .neg { color: #ef4444; background: #fef2f2; }
         .revised-val { color: #166534; font-weight: bold; background: #f0fdf4; }
@@ -146,7 +144,7 @@
     </div>
     
     <div class="setup">
-        <div class="input-group"><label>開始期 (2026年想定)</label><input type="number" id="startP" value="21" oninput="initManualInputs(); calc();"></div>
+        <div class="input-group"><label>開始期 (2026年想定)</label><input type="number" id="startP" value="21" oninput="initManualInputs(); updateManualAndCalc();"></div>
         <div class="input-group"><label>期首繰越金残高 (万円)</label><input type="number" id="bal" value="3470" oninput="calc()"></div>
         <div class="input-group"><label>現在の積立単価 (円/㎡)</label><input type="number" id="price" value="450" oninput="calc()"></div>
         <div class="input-group" style="background: #ecfdf5; border-radius: 4px; padding: 4px;">
@@ -191,7 +189,7 @@
                 <th>主な修繕</th>
                 <th>単価（円/㎡）</th>
             </tr>
-            </thead>
+        </thead>
         <tbody id="tbody"></tbody>
     </table>
 </div>
@@ -202,13 +200,15 @@ const AREA_FIXED = 1887;
 const BASE_YEAR = 2026;
 const BASE_PERIOD = 21;
 
-let initialExpenses = [
-    550.6, 253, 0, 0, 520, 55, 386, 286, 0, 1644.5, 
-    1100, 0, 1001.5, 55, 1067, 286.6, 99, 385, 61.6, 0, 
-    0, 154, 77, 187, 0, 2222, 0, 649.5, 198, 0
-];
+// ▼ 配列形式を廃止し、期(キー)と金額(バリュー)のセット（オブジェクト）に変更 ▼
+let baseExpensesMap = {
+    21: 550.6, 22: 253, 23: 0, 24: 0, 25: 520, 26: 55, 27: 386, 28: 286, 29: 0, 30: 1644.5, 
+    31: 1100, 32: 0, 33: 1001.5, 34: 55, 35: 1067, 36: 286.6, 37: 99, 38: 385, 39: 61.6, 40: 0, 
+    41: 0, 42: 154, 43: 77, 44: 187, 45: 0, 46: 2222, 47: 0, 48: 649.5, 49: 198, 50: 0
+};
 
-let expenses = [...initialExpenses];
+// 計算に使うための30期分の一時配列
+let currentPeriodExpenses = [];
 
 function closeModal(event) {
     if (event) event.preventDefault();
@@ -219,38 +219,58 @@ function initManualInputs() {
     const startP = parseInt(document.getElementById('startP').value) || BASE_PERIOD;
     const container = document.getElementById('manualInputs');
     container.innerHTML = "";
+    
     for (let i = 0; i < PERIODS; i++) {
+        const p = startP + i;
         const div = document.createElement('div');
         div.className = 'manual-col';
-        div.innerHTML = `<label>${startP + i}期</label><input type="number" id="exp_${i}" value="${expenses[i] || 0}" oninput="syncFromManual(${i})" onclick="this.select()">`;
+        div.innerHTML = `<label>${p}期</label><input type="number" id="exp_${i}" oninput="syncFromManual(${i})" onclick="this.select()">`;
         container.appendChild(div);
     }
 }
 
 function updateManualAndCalc() {
-    expenses = [...initialExpenses]; 
     const startP = parseInt(document.getElementById('startP').value) || BASE_PERIOD;
-    const config = [
-        { p: parseInt(document.getElementById('repP2').value), v: parseFloat(document.getElementById('repV2').value) || 0 },
-        { p: parseInt(document.getElementById('repP3').value), v: parseFloat(document.getElementById('repV3').value) || 0 },
-        { p: parseInt(document.getElementById('evP').value), v: parseFloat(document.getElementById('evV').value) || 0 },
-        { p: parseInt(document.getElementById('pkgP').value), v: parseFloat(document.getElementById('pkgV').value) || 0 },
-        { p: parseInt(document.getElementById('pipeP').value), v: parseFloat(document.getElementById('pipeV').value) || 0 }
-    ];
-    config.forEach(c => {
-        const idx = c.p - startP;
-        if (idx >= 0 && idx < PERIODS) expenses[idx] += c.v;
-    });
+    currentPeriodExpenses = [];
+    
     for (let i = 0; i < PERIODS; i++) {
+        const p = startP + i;
+        
+        // オブジェクトに設定されていない期は自動で「0」になる
+        let total = baseExpensesMap[p] !== undefined ? baseExpensesMap[p] : 0;
+        
+        // 該当する期の工事金額を加算
+        if (p === parseInt(document.getElementById('repP2').value)) total += parseFloat(document.getElementById('repV2').value) || 0;
+        if (p === parseInt(document.getElementById('repP3').value)) total += parseFloat(document.getElementById('repV3').value) || 0;
+        if (p === parseInt(document.getElementById('evP').value)) total += parseFloat(document.getElementById('evV').value) || 0;
+        if (p === parseInt(document.getElementById('pkgP').value)) total += parseFloat(document.getElementById('pkgV').value) || 0;
+        if (p === parseInt(document.getElementById('pipeP').value)) total += parseFloat(document.getElementById('pipeV').value) || 0;
+        
+        currentPeriodExpenses[i] = total;
+        
+        // 入力ボックスの表示を更新
         const input = document.getElementById(`exp_${i}`);
-        if (input) input.value = Math.round(expenses[i] * 10) / 10;
+        if (input) input.value = Math.round(total * 10) / 10;
     }
     calc();
 }
 
 function syncFromManual(idx) {
-    expenses[idx] = parseFloat(document.getElementById(`exp_${idx}`).value) || 0;
-    initialExpenses[idx] = expenses[idx]; 
+    const startP = parseInt(document.getElementById('startP').value) || BASE_PERIOD;
+    const p = startP + idx;
+    const typedVal = parseFloat(document.getElementById(`exp_${idx}`).value) || 0;
+    
+    let largeRepairs = 0;
+    if (p === parseInt(document.getElementById('repP2').value)) largeRepairs += parseFloat(document.getElementById('repV2').value) || 0;
+    if (p === parseInt(document.getElementById('repP3').value)) largeRepairs += parseFloat(document.getElementById('repV3').value) || 0;
+    if (p === parseInt(document.getElementById('evP').value)) largeRepairs += parseFloat(document.getElementById('evV').value) || 0;
+    if (p === parseInt(document.getElementById('pkgP').value)) largeRepairs += parseFloat(document.getElementById('pkgV').value) || 0;
+    if (p === parseInt(document.getElementById('pipeP').value)) largeRepairs += parseFloat(document.getElementById('pipeV').value) || 0;
+    
+    // 入力値から工事費を引いたものを「その期の基礎支出」として記憶する
+    baseExpensesMap[p] = typedVal - largeRepairs;
+    currentPeriodExpenses[idx] = typedVal;
+    
     calc();
 }
 
@@ -272,7 +292,7 @@ function calc() {
 
     let maxB = 0, minB = 0, tempB = bal;
     for (let i = 0; i < PERIODS; i++) {
-        tempB = tempB + ((getUnitPrice(startP + i) * AREA_FIXED * 12) / 10000) - (expenses[i] || 0);
+        tempB = tempB + ((getUnitPrice(startP + i) * AREA_FIXED * 12) / 10000) - (currentPeriodExpenses[i] || 0);
         maxB = Math.max(maxB, tempB); minB = Math.min(minB, tempB);
     }
     maxB = Math.max(maxB, 1000); minB = Math.min(minB, 0); 
@@ -287,7 +307,7 @@ function calc() {
     for (let i = 0; i < PERIODS; i++) {
         const p = startP + i;
         const year = BASE_YEAR + (p - BASE_PERIOD);
-        const exp = expenses[i] || 0;
+        const exp = currentPeriodExpenses[i] || 0;
         const unitPrice = getUnitPrice(p);
         const incomeY = (unitPrice * AREA_FIXED * 12) / 10000;
         
@@ -313,7 +333,6 @@ function calc() {
         const row = tbody.insertRow();
         if (currentBal < 0) row.className = 'neg';
         
-        // inlineの style="text-align:center;" 等はCSSで統一されたため削除しています
         row.innerHTML = `
             <td class="year-col">${year}</td>
             <td>${p}期</td>
@@ -346,6 +365,7 @@ function calc() {
     }
 }
 
+// データ保存・読込処理も新しいMap方式に対応
 function saveData() {
     const data = {
         startP: document.getElementById('startP').value,
@@ -358,7 +378,7 @@ function saveData() {
         evP: document.getElementById('evP').value,     evV: document.getElementById('evV').value,
         pkgP: document.getElementById('pkgP').value,   pkgV: document.getElementById('pkgV').value,
         pipeP: document.getElementById('pipeP').value, pipeV: document.getElementById('pipeV').value,
-        initialExpenses: initialExpenses
+        baseExpensesMap: baseExpensesMap
     };
     const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -385,7 +405,18 @@ function loadData(event) {
             document.getElementById('evP').value = data.evP;     document.getElementById('evV').value = data.evV;
             document.getElementById('pkgP').value = data.pkgP;   document.getElementById('pkgV').value = data.pkgV;
             document.getElementById('pipeP').value = data.pipeP; document.getElementById('pipeV').value = data.pipeV;
-            if (data.initialExpenses) initialExpenses = data.initialExpenses;
+            
+            // 古いJSONファイル（配列形式）も読み込めるように互換性をもたせる
+            if (data.baseExpensesMap) {
+                baseExpensesMap = data.baseExpensesMap;
+            } else if (data.initialExpenses) {
+                baseExpensesMap = {};
+                const loadedStartP = parseInt(data.startP) || BASE_PERIOD;
+                for (let i = 0; i < data.initialExpenses.length; i++) {
+                    baseExpensesMap[loadedStartP + i] = data.initialExpenses[i];
+                }
+            }
+            
             initManualInputs(); updateManualAndCalc();
         } catch (error) { alert('読み込みに失敗しました。'); }
     };
