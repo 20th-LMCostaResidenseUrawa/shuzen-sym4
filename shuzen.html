@@ -172,35 +172,35 @@
             <label style="color: #92400e;">2回目大規模修繕</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="repP2" value="27" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="repV2" value="12914" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+                <input type="number" id="repV2" value="12914" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">3回目大規模修繕</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="repP3" value="40" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="repV3" value="12201" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+                <input type="number" id="repV3" value="12201" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">EVリニューアル</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="evP" value="25" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="evV" value="3949" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+                <input type="number" id="evV" value="3949" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">駐車場更新</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="pkgP" value="29" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="pkgV" value="3630" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+                <input type="number" id="pkgV" value="3630" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">給排水管更新</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="pipeP" value="45" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="pipeV" value="9487" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+                <input type="number" id="pipeV" value="9487" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
     </div>
@@ -327,7 +327,6 @@ function calc() {
     validPlans.sort((a, b) => a.p - b.p);
 
     function getIncomeData(p) {
-        // ▼ 21期の単年収入は1410万円で固定 ▼
         if (p === 21) {
             return { 
                 income: 1410, 
