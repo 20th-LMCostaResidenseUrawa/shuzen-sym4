@@ -33,7 +33,7 @@
         .manual-col label { font-size: 9px; margin-bottom: 2px; color: #1e40af; font-weight: bold; }
         .manual-col input { padding: 4px; font-size: 11px; text-align: center; width: 100%; box-sizing: border-box; border: 1px solid #e2e8f0; border-radius: 3px; }
 
-        .chart-container { position: relative; height: 350px; margin: 60px 0 40px 0; background: #fff; border-left: 1px solid #cbd5e1; }
+        .chart-container { position: relative; height: 350px; margin: 60px 0 50px 0; background: #fff; border-left: 1px solid #cbd5e1; }
         .zero-line { position: absolute; left: 0; width: 100%; height: 2px; background: #475569; z-index: 2; }
         .chart-area { display: flex; height: 100%; align-items: flex-start; padding: 0 5px; gap: 2px; }
         .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; height: 100%; }
@@ -41,7 +41,7 @@
         .bar.plus { background: #3b82f6; border-radius: 2px 2px 0 0; }
         .bar.minus { background: #ef4444; border-radius: 0 0 2px 2px; }
         .bar-label { position: absolute; font-size: 8px; white-space: nowrap; transform: rotate(-45deg); font-weight: bold; z-index: 3;}
-        .p-label { position: absolute; bottom: -25px; font-size: 9px; color: #64748b; white-space: nowrap; }
+        .p-label { position: absolute; bottom: -30px; font-size: 9px; color: #64748b; white-space: nowrap; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; table-layout: fixed; }
         th, td { border: 1px solid #e2e8f0; padding: 8px 4px; text-align: center; vertical-align: middle; overflow: hidden; }
@@ -76,20 +76,9 @@
         .btn-help { background-color: #f59e0b; }
         .btn:hover { opacity: 0.9; }
 
-        /* モーダル（使い方ガイド）用のCSS */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: 1000; backdrop-filter: blur(2px);
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 600px; margin: 5vh auto;
-            padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            position: relative; max-height: 85vh; overflow-y: auto;
-        }
-        .modal-close {
-            position: absolute; top: 15px; right: 15px; font-size: 24px; color: #64748b;
-            cursor: pointer; line-height: 1; text-decoration: none;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; backdrop-filter: blur(2px); }
+        .modal-content { background: white; width: 90%; max-width: 600px; margin: 5vh auto; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 85vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; color: #64748b; cursor: pointer; line-height: 1; text-decoration: none; }
         .modal-close:hover { color: #ef4444; }
         .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; }
         .modal-body ul { padding-left: 20px; margin-bottom: 15px; }
@@ -107,7 +96,7 @@
             
             <h4>1. 基本設定（画面上部）</h4>
             <ul>
-                <li><strong>開始期・繰越金・積立単価：</strong> 現在の状況を入力します。</li>
+                <li><strong>開始期・繰越金・延べ床面積・積立単価：</strong> 現在の状況を入力します。</li>
                 <li><strong>積立金改定プラン：</strong> 将来の値上げ予定がある場合、「何期」から「何円/㎡」にするかを設定すると、表とグラフに反映されます。</li>
             </ul>
 
@@ -146,7 +135,8 @@
     
     <div class="setup">
         <div class="input-group"><label>開始期</label><input type="number" id="startP" value="21" oninput="initManualInputs(); updateManualAndCalc();"></div>
-        <div class="input-group"><label>期首繰越金残高 (万円)</label><input type="number" id="bal" value="3470" oninput="calc()"></div>
+        <div class="input-group"><label>期首繰越金残高 (万円)</label><input type="number" id="bal" value="2611.2" step="0.1" oninput="calc()"></div>
+        <div class="input-group"><label>延べ床面積 (㎡)</label><input type="number" id="area" value="3042.41" step="0.01" oninput="calc()"></div>
         <div class="input-group"><label>現在の積立単価 (円/㎡)</label><input type="number" id="price" value="450" oninput="calc()"></div>
         <div class="input-group" style="background: #ecfdf5; border-radius: 4px; padding: 4px;">
             <label style="color: #059669;">積立金改定プラン</label>
@@ -197,7 +187,6 @@
 
 <script>
 const PERIODS = 30; 
-const AREA_FIXED = 1887; 
 const BASE_YEAR = 2026;
 const BASE_PERIOD = 21;
 
@@ -208,6 +197,12 @@ let baseExpensesMap = {
 };
 
 let currentPeriodExpenses = [];
+
+// ▼ 数値を小数点第1位まで表示するためのフォーマット関数 ▼
+function formatNum(num) {
+    if (num === 0) return '0.0';
+    return (Math.round(num * 10) / 10).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
+}
 
 function closeModal(event) {
     if (event) event.preventDefault();
@@ -223,7 +218,7 @@ function initManualInputs() {
         const p = startP + i;
         const div = document.createElement('div');
         div.className = 'manual-col';
-        div.innerHTML = `<label>${p}期</label><input type="number" id="exp_${i}" oninput="syncFromManual(${i})" onclick="this.select()">`;
+        div.innerHTML = `<label>${p}期</label><input type="number" step="0.1" id="exp_${i}" oninput="syncFromManual(${i})" onclick="this.select()">`;
         container.appendChild(div);
     }
 }
@@ -272,6 +267,8 @@ function syncFromManual(idx) {
 function calc() {
     const startP = parseInt(document.getElementById('startP').value) || BASE_PERIOD;
     let bal = parseFloat(document.getElementById('bal').value) || 0;
+    // ▼ 延べ床面積を取得 ▼
+    const currentArea = parseFloat(document.getElementById('area').value) || 0;
     const currentPrice = parseFloat(document.getElementById('price').value) || 0;
     const reviseP = parseInt(document.getElementById('reviseP').value) || 999;
     const revisePrice = parseFloat(document.getElementById('reviseV').value) || 0;
@@ -287,12 +284,20 @@ function calc() {
 
     let maxB = 0, minB = 0, tempB = bal;
     for (let i = 0; i < PERIODS; i++) {
-        tempB = tempB + ((getUnitPrice(startP + i) * AREA_FIXED * 12) / 10000) - (currentPeriodExpenses[i] || 0);
+        tempB = tempB + ((getUnitPrice(startP + i) * currentArea * 12) / 10000) - (currentPeriodExpenses[i] || 0);
         maxB = Math.max(maxB, tempB); minB = Math.min(minB, tempB);
     }
-    maxB = Math.max(maxB, 1000); minB = Math.min(minB, 0); 
+    
+    maxB = Math.max(maxB, 1000);
+    minB = Math.min(minB, 0); 
+    let tempRange = maxB - minB;
+    if(tempRange === 0) tempRange = 1000;
+    
+    maxB += tempRange * 0.15; 
+    minB -= tempRange * 0.1;  
+    
     const range = maxB - minB;
-    const zeroPos = range === 0 ? 50 : (maxB / range) * 100; 
+    const zeroPos = (maxB / range) * 100; 
     zeroLine.style.top = zeroPos + "%";
 
     let currentBal = bal;
@@ -304,7 +309,8 @@ function calc() {
         const year = BASE_YEAR + (p - BASE_PERIOD);
         const exp = currentPeriodExpenses[i] || 0;
         const unitPrice = getUnitPrice(p);
-        const incomeY = (unitPrice * AREA_FIXED * 12) / 10000;
+        // ▼ 面積から収入を計算 ▼
+        const incomeY = (unitPrice * currentArea * 12) / 10000;
         
         cumIncome += incomeY;
         cumExp += exp;
@@ -331,11 +337,11 @@ function calc() {
         row.innerHTML = `
             <td class="year-col">${year}</td>
             <td>${p}期</td>
-            <td>${Math.round(incomeY).toLocaleString()}</td>
-            <td class="cum-col">${Math.round(cumIncome).toLocaleString()}</td>
-            <td>${exp > 0 ? Math.round(exp).toLocaleString() : '-'}</td>
-            <td class="cum-col">${Math.round(cumExp).toLocaleString()}</td>
-            <td style="font-weight:bold">${Math.round(currentBal).toLocaleString()}</td>
+            <td>${formatNum(incomeY)}</td>
+            <td class="cum-col">${formatNum(cumIncome)}</td>
+            <td>${exp > 0 ? formatNum(exp) : '-'}</td>
+            <td class="cum-col">${formatNum(cumExp)}</td>
+            <td style="font-weight:bold">${formatNum(currentBal)}</td>
             <td>${eventsHtml}</td>
             <td class="${p >= reviseP && revisePrice !== currentPrice ? 'revised-val' : ''}">${unitPrice}</td>
         `;
@@ -364,6 +370,7 @@ function saveData() {
     const data = {
         startP: document.getElementById('startP').value,
         bal: document.getElementById('bal').value,
+        area: document.getElementById('area').value, // 面積も保存
         price: document.getElementById('price').value,
         reviseP: document.getElementById('reviseP').value,
         reviseV: document.getElementById('reviseV').value,
@@ -391,6 +398,8 @@ function loadData(event) {
             const data = JSON.parse(e.target.result);
             document.getElementById('startP').value = data.startP;
             document.getElementById('bal').value = data.bal;
+            // 面積の読込（古いデータの場合は3042.41をフォールバック）
+            document.getElementById('area').value = data.area || 3042.41; 
             document.getElementById('price').value = data.price;
             document.getElementById('reviseP').value = data.reviseP;
             document.getElementById('reviseV').value = data.reviseV;
