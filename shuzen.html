@@ -11,7 +11,6 @@
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         h2 { border-left: 5px solid #2563eb; padding-left: 10px; margin: 0; font-size: 18px; }
         
-        /* ▼ 高さが中央で揃うように align-items: center; に変更 ▼ */
         .setup { display: flex; flex-wrap: wrap; gap: 15px 25px; margin-bottom: 20px; background: #f8fafc; padding: 15px 20px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center; }
         .input-group { display: flex; flex-direction: column; }
         label { font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
@@ -99,7 +98,8 @@
             <h4>1. 基本設定（画面上部）</h4>
             <ul>
                 <li><strong>開始期・繰越金・延べ床面積・積立単価：</strong> 現在の状況を入力します。</li>
-                <li><strong>積立金改定プラン：</strong> 将来の段階的な値上げ予定がある場合、最大3段階まで「何期」から「何円/㎡」にするかを設定でき、表とグラフに反映されます。不要な段階は空欄にしてください。</li>
+                <li><strong>積立金改定プラン：</strong> 将来の段階的な値上げ予定がある場合、最大3段階まで「何期」から「何円/㎡」にするかを設定でき、表とグラフに反映されます。不要な段階は空欄にしてください。<br>
+                <span style="color: #ef4444; font-size: 11px;">※改定のある期は、1～7月分（7ヶ月）を改定前の単価、8～12月分（5ヶ月）を改定後の単価として自動で按分計算されます。</span></li>
             </ul>
 
             <h4>2. 主要な修繕の時期とコスト</h4>
@@ -156,7 +156,7 @@
         </div>
         
         <div class="input-group" style="background: #ecfdf5; border-radius: 6px; padding: 8px 12px; border: 1px solid #a7f3d0; margin-left: auto;">
-            <label style="color: #059669; margin-bottom: 4px;">積立金改定プラン（最大3段階）</label>
+            <label style="color: #059669; margin-bottom: 4px;">積立金改定プラン（最大3段階・8月反映）</label>
             <div style="font-size: 13px; display: flex; flex-wrap: wrap; gap: 15px;">
                 <div style="white-space: nowrap;">① <input type="number" id="reviseP" value="23" style="width:40px" oninput="calc()"> 期から <input type="number" id="reviseV" value="520" style="width:55px" oninput="calc()"> 円</div>
                 <div style="white-space: nowrap;">② <input type="number" id="reviseP2" value="" placeholder="-" style="width:40px" oninput="calc()"> 期から <input type="number" id="reviseV2" value="" placeholder="-" style="width:55px" oninput="calc()"> 円</div>
@@ -166,12 +166,43 @@
     </div>
 
     <h3>🛠 主要な修繕の時期とコスト<span class="note">※コストは概算額に消費税10％を加えたものを入力する</span></h3>
-    <div class="setup" style="background: #fffbeb;">
-        <div class="input-group"><label>2回目大規模修繕</label><div><input type="number" id="repP2" value="27" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV2" value="12914" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>3回目大規模修繕</label><div><input type="number" id="repP3" value="40" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV3" value="12201" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>EVリニューアル</label><div><input type="number" id="evP" value="25" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="evV" value="3949" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>駐車場更新</label><div><input type="number" id="pkgP" value="29" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="pkgV" value="3630" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>給排水管更新</label><div><input type="number" id="pipeP" value="45" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="pipeV" value="9487" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
+    
+    <div class="setup" style="background: #fffbeb; border: 1px solid #fde68a; justify-content: flex-start; gap: 15px 35px; padding: 15px 25px;">
+        <div class="input-group">
+            <label style="color: #92400e;">2回目大規模修繕</label>
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="repP2" value="27" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="repV2" value="12914" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+            </div>
+        </div>
+        <div class="input-group">
+            <label style="color: #92400e;">3回目大規模修繕</label>
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="repP3" value="40" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="repV3" value="12201" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+            </div>
+        </div>
+        <div class="input-group">
+            <label style="color: #92400e;">EVリニューアル</label>
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="evP" value="25" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="evV" value="3949" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+            </div>
+        </div>
+        <div class="input-group">
+            <label style="color: #92400e;">駐車場更新</label>
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="pkgP" value="29" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="pkgV" value="3630" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+            </div>
+        </div>
+        <div class="input-group">
+            <label style="color: #92400e;">給排水管更新</label>
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="pipeP" value="45" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="pipeV" value="9487" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万
+            </div>
+        </div>
     </div>
 
     <h3>📝 各期の単年支出内訳 (万円)<span class="note">※数字は長期修繕計画総括表の支出年度合計から入力する</span></h3>
@@ -295,14 +326,35 @@ function calc() {
     
     validPlans.sort((a, b) => a.p - b.p);
 
-    function getUnitPrice(p) {
-        let price = currentPrice;
+    function getIncomeData(p) {
+        let targetPlan = validPlans.find(plan => plan.p === p);
+        
+        let priceBase = currentPrice;
         for (let plan of validPlans) {
-            if (p >= plan.p) {
-                price = plan.v;
-            }
+            if (p > plan.p) priceBase = plan.v;
         }
-        return price;
+
+        if (targetPlan && targetPlan.v !== priceBase) {
+            let income = (priceBase * currentArea * 7 / 10000) + (targetPlan.v * currentArea * 5 / 10000);
+            return { 
+                income: income, 
+                displayPrice: `${priceBase} → ${targetPlan.v}`, 
+                isRevised: true, 
+                currentUnitPrice: targetPlan.v 
+            };
+        } else {
+            let currentPPrice = currentPrice;
+            for (let plan of validPlans) {
+                if (p >= plan.p) currentPPrice = plan.v;
+            }
+            let income = (currentPPrice * currentArea * 12) / 10000;
+            return { 
+                income: income, 
+                displayPrice: currentPPrice, 
+                isRevised: false, 
+                currentUnitPrice: currentPPrice 
+            };
+        }
     }
 
     const chart = document.getElementById('chart');
@@ -312,7 +364,8 @@ function calc() {
 
     let maxB = 0, minB = 0, tempB = bal;
     for (let i = 0; i < PERIODS; i++) {
-        tempB = tempB + ((getUnitPrice(startP + i) * currentArea * 12) / 10000) - (currentPeriodExpenses[i] || 0);
+        let incomeInfo = getIncomeData(startP + i);
+        tempB = tempB + incomeInfo.income - (currentPeriodExpenses[i] || 0);
         maxB = Math.max(maxB, tempB); minB = Math.min(minB, tempB);
     }
     
@@ -336,8 +389,9 @@ function calc() {
         const p = startP + i;
         const year = BASE_YEAR + (p - BASE_PERIOD);
         const exp = currentPeriodExpenses[i] || 0;
-        const unitPrice = getUnitPrice(p);
-        const incomeY = (unitPrice * currentArea * 12) / 10000;
+        
+        const incomeInfo = getIncomeData(p);
+        const incomeY = incomeInfo.income;
         
         cumIncome += incomeY;
         cumExp += exp;
@@ -358,10 +412,8 @@ function calc() {
             }
         });
 
-        for (let plan of validPlans) {
-            if (p === plan.p && plan.v !== currentPrice) {
-                eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46; border-color:#a7f3d0;">改定 (${plan.v}円)</span> `;
-            }
+        if (incomeInfo.isRevised) {
+            eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46; border-color:#a7f3d0;">改定 (${incomeInfo.currentUnitPrice}円)</span> `;
         }
 
         const row = tbody.insertRow();
@@ -376,7 +428,7 @@ function calc() {
             <td class="cum-col">${formatNum(cumExp)}</td>
             <td style="font-weight:bold">${formatNum(currentBal)}</td>
             <td>${eventsHtml}</td>
-            <td class="${unitPrice !== currentPrice ? 'revised-val' : ''}">${unitPrice}</td>
+            <td class="${incomeInfo.isRevised ? 'revised-val' : ''}">${incomeInfo.displayPrice}</td>
         `;
 
         const wrapper = document.createElement('div');
