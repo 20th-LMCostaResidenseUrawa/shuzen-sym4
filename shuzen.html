@@ -11,14 +11,15 @@
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         h2 { border-left: 5px solid #2563eb; padding-left: 10px; margin: 0; font-size: 18px; }
         
-        /* ▼ 入力エリアのレイアウトを「グリッド」から「フレックス」に変更し、左詰めでコンパクトに配置 ▼ */
-        .setup { display: flex; flex-wrap: wrap; gap: 15px 25px; margin-bottom: 20px; background: #f8fafc; padding: 15px 20px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: flex-end; }
+        /* ▼ 高さが中央で揃うように align-items: center; に変更 ▼ */
+        .setup { display: flex; flex-wrap: wrap; gap: 15px 25px; margin-bottom: 20px; background: #f8fafc; padding: 15px 20px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center; }
         .input-group { display: flex; flex-direction: column; }
         label { font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
         
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
+        input::placeholder { color: #cbd5e1; }
 
         .manual-input-area {
             display: grid;
@@ -98,7 +99,7 @@
             <h4>1. 基本設定（画面上部）</h4>
             <ul>
                 <li><strong>開始期・繰越金・延べ床面積・積立単価：</strong> 現在の状況を入力します。</li>
-                <li><strong>積立金改定プラン：</strong> 将来の値上げ予定がある場合、「何期」から「何円/㎡」にするかを設定すると、表とグラフに反映されます。</li>
+                <li><strong>積立金改定プラン：</strong> 将来の段階的な値上げ予定がある場合、最大3段階まで「何期」から「何円/㎡」にするかを設定でき、表とグラフに反映されます。不要な段階は空欄にしてください。</li>
             </ul>
 
             <h4>2. 主要な修繕の時期とコスト</h4>
@@ -135,27 +136,31 @@
     </div>
     
     <div class="setup">
-        <div class="input-group">
-            <label>開始期</label>
-            <input type="number" id="startP" value="21" style="width: 70px;" oninput="initManualInputs(); updateManualAndCalc();">
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 8px 0; border: 1px solid transparent;">
+            <div class="input-group">
+                <label>開始期</label>
+                <input type="number" id="startP" value="21" style="width: 70px;" oninput="initManualInputs(); updateManualAndCalc();">
+            </div>
+            <div class="input-group">
+                <label>期首繰越金残高 (万円)</label>
+                <input type="number" id="bal" value="2611.2" step="0.1" style="width: 120px;" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>延べ床面積 (㎡)</label>
+                <input type="number" id="area" value="3042.41" step="0.01" style="width: 100px;" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>現在の積立単価 (円/㎡)</label>
+                <input type="number" id="price" value="450" style="width: 90px;" oninput="calc()">
+            </div>
         </div>
-        <div class="input-group">
-            <label>期首繰越金残高 (万円)</label>
-            <input type="number" id="bal" value="2611.2" step="0.1" style="width: 120px;" oninput="calc()">
-        </div>
-        <div class="input-group">
-            <label>延べ床面積 (㎡)</label>
-            <input type="number" id="area" value="3042.41" step="0.01" style="width: 100px;" oninput="calc()">
-        </div>
-        <div class="input-group">
-            <label>現在の積立単価 (円/㎡)</label>
-            <input type="number" id="price" value="450" style="width: 90px;" oninput="calc()">
-        </div>
-        <div class="input-group" style="background: #ecfdf5; border-radius: 4px; padding: 8px 12px;">
-            <label style="color: #059669; margin-bottom: 2px;">積立金改定プラン</label>
-            <div style="font-size: 13px;">
-                <input type="number" id="reviseP" value="23" style="width:50px" oninput="calc()"> 期から
-                <input type="number" id="reviseV" value="520" style="width:60px; margin-left: 4px;" oninput="calc()"> 円/㎡に
+        
+        <div class="input-group" style="background: #ecfdf5; border-radius: 6px; padding: 8px 12px; border: 1px solid #a7f3d0; margin-left: auto;">
+            <label style="color: #059669; margin-bottom: 4px;">積立金改定プラン（最大3段階）</label>
+            <div style="font-size: 13px; display: flex; flex-wrap: wrap; gap: 15px;">
+                <div style="white-space: nowrap;">① <input type="number" id="reviseP" value="23" style="width:40px" oninput="calc()"> 期から <input type="number" id="reviseV" value="520" style="width:55px" oninput="calc()"> 円</div>
+                <div style="white-space: nowrap;">② <input type="number" id="reviseP2" value="" placeholder="-" style="width:40px" oninput="calc()"> 期から <input type="number" id="reviseV2" value="" placeholder="-" style="width:55px" oninput="calc()"> 円</div>
+                <div style="white-space: nowrap;">③ <input type="number" id="reviseP3" value="" placeholder="-" style="width:40px" oninput="calc()"> 期から <input type="number" id="reviseV3" value="" placeholder="-" style="width:55px" oninput="calc()"> 円</div>
             </div>
         </div>
     </div>
@@ -281,17 +286,29 @@ function calc() {
     let bal = parseFloat(document.getElementById('bal').value) || 0;
     const currentArea = parseFloat(document.getElementById('area').value) || 0;
     const currentPrice = parseFloat(document.getElementById('price').value) || 0;
-    const reviseP = parseInt(document.getElementById('reviseP').value) || 999;
-    const revisePrice = parseFloat(document.getElementById('reviseV').value) || 0;
+
+    let validPlans = [
+        { p: parseInt(document.getElementById('reviseP').value), v: parseFloat(document.getElementById('reviseV').value) },
+        { p: parseInt(document.getElementById('reviseP2').value), v: parseFloat(document.getElementById('reviseV2').value) },
+        { p: parseInt(document.getElementById('reviseP3').value), v: parseFloat(document.getElementById('reviseV3').value) }
+    ].filter(plan => !isNaN(plan.p) && !isNaN(plan.v) && plan.p > 0 && plan.v > 0);
+    
+    validPlans.sort((a, b) => a.p - b.p);
+
+    function getUnitPrice(p) {
+        let price = currentPrice;
+        for (let plan of validPlans) {
+            if (p >= plan.p) {
+                price = plan.v;
+            }
+        }
+        return price;
+    }
 
     const chart = document.getElementById('chart');
     const tbody = document.getElementById('tbody');
     const zeroLine = document.getElementById('zeroLine');
     chart.innerHTML = ""; tbody.innerHTML = "";
-
-    function getUnitPrice(p) {
-        return (p >= reviseP) ? revisePrice : currentPrice;
-    }
 
     let maxB = 0, minB = 0, tempB = bal;
     for (let i = 0; i < PERIODS; i++) {
@@ -341,6 +358,12 @@ function calc() {
             }
         });
 
+        for (let plan of validPlans) {
+            if (p === plan.p && plan.v !== currentPrice) {
+                eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46; border-color:#a7f3d0;">改定 (${plan.v}円)</span> `;
+            }
+        }
+
         const row = tbody.insertRow();
         if (currentBal < 0) row.className = 'neg';
         
@@ -353,7 +376,7 @@ function calc() {
             <td class="cum-col">${formatNum(cumExp)}</td>
             <td style="font-weight:bold">${formatNum(currentBal)}</td>
             <td>${eventsHtml}</td>
-            <td class="${p >= reviseP && revisePrice !== currentPrice ? 'revised-val' : ''}">${unitPrice}</td>
+            <td class="${unitPrice !== currentPrice ? 'revised-val' : ''}">${unitPrice}</td>
         `;
 
         const wrapper = document.createElement('div');
@@ -384,6 +407,10 @@ function saveData() {
         price: document.getElementById('price').value,
         reviseP: document.getElementById('reviseP').value,
         reviseV: document.getElementById('reviseV').value,
+        reviseP2: document.getElementById('reviseP2').value,
+        reviseV2: document.getElementById('reviseV2').value,
+        reviseP3: document.getElementById('reviseP3').value,
+        reviseV3: document.getElementById('reviseV3').value,
         repP2: document.getElementById('repP2').value, repV2: document.getElementById('repV2').value,
         repP3: document.getElementById('repP3').value, repV3: document.getElementById('repV3').value,
         evP: document.getElementById('evP').value,     evV: document.getElementById('evV').value,
@@ -410,8 +437,14 @@ function loadData(event) {
             document.getElementById('bal').value = data.bal;
             document.getElementById('area').value = data.area || 3042.41; 
             document.getElementById('price').value = data.price;
-            document.getElementById('reviseP').value = data.reviseP;
-            document.getElementById('reviseV').value = data.reviseV;
+            
+            document.getElementById('reviseP').value = data.reviseP || "";
+            document.getElementById('reviseV').value = data.reviseV || "";
+            document.getElementById('reviseP2').value = data.reviseP2 || "";
+            document.getElementById('reviseV2').value = data.reviseV2 || "";
+            document.getElementById('reviseP3').value = data.reviseP3 || "";
+            document.getElementById('reviseV3').value = data.reviseV3 || "";
+            
             document.getElementById('repP2').value = data.repP2; document.getElementById('repV2').value = data.repV2;
             document.getElementById('repP3').value = data.repP3; document.getElementById('repV3').value = data.repV3;
             document.getElementById('evP').value = data.evP;     document.getElementById('evV').value = data.evV;
