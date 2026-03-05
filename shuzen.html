@@ -327,6 +327,16 @@ function calc() {
     validPlans.sort((a, b) => a.p - b.p);
 
     function getIncomeData(p) {
+        // ▼ 21期の単年収入は1410万円で固定 ▼
+        if (p === 21) {
+            return { 
+                income: 1410, 
+                displayPrice: currentPrice, 
+                isRevised: false, 
+                currentUnitPrice: currentPrice 
+            };
+        }
+
         let targetPlan = validPlans.find(plan => plan.p === p);
         
         let priceBase = currentPrice;
