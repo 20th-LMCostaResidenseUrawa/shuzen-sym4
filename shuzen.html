@@ -84,7 +84,7 @@
         .modal-close:hover { color: #ef4444; }
         .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; }
         .modal-body ul { padding-left: 20px; margin-bottom: 15px; }
-        .modal-body li { margin-bottom: 8px; }
+        .modal-body li { margin-bottom: 8px; line-height: 1.5; }
         
         .custom-job-input { width: 120px; margin-bottom: 2px; font-size: 11px; font-weight: bold; color: #92400e; border: 1px solid #fcd34d; border-radius: 4px; padding: 3px 6px; background: rgba(255,255,255,0.7); outline: none; }
         .custom-job-input:focus { border-color: #f59e0b; background: #fff; }
@@ -98,32 +98,46 @@
         <a class="modal-close" onclick="closeModal(event)">&times;</a>
         <h2 style="border-left: 5px solid #f59e0b; padding-left: 10px; margin-bottom: 10px;">📖 シミュレーターの使い方</h2>
         <div class="modal-body">
-            <p>このツールは、LMコスタレジデンス浦和の修繕積立金の将来推移をシミュレーションするためのものです。</p>
+            <p style="font-size: 12px; margin-bottom: 15px; line-height: 1.6; color: #475569;">
+                積立金改定・計画変更を実施した場合に将来収支がどうなるのか「目安」を知る目的で作成しました。実際の数字とは若干差異が出ます。<br>
+                初期値は２０期に作成した概算計画のものになっていますが、手入力したデータを保存し再度読み込むこともできますし、ご要望あればアプリを直接書き換えることも可能です。<br>
+                感覚的に使えると思いますが、新たに計画が更新された場合は、データの書き換えが必要で、変更データ入力は少し面倒だと思います。一度入力すれば保存して読み込みできます。
+            </p>
             
-            <h4>1. 基本設定（画面上部）</h4>
+            <h4>1. 基本設定</h4>
             <ul>
-                <li><strong>開始期・繰越金・延べ床面積・積立単価：</strong> 現在の状況を入力します。</li>
-                <li><strong>積立金改定プラン：</strong> 将来の段階的な値上げ予定がある場合、最大3段階まで「何期」から「何円/㎡」にするかを設定でき、表とグラフに反映されます。不要な段階は空欄にしてください。<br>
-                <span style="color: #ef4444; font-size: 11px;">※改定のある期は、1～7月分（7ヶ月）を改定前の単価、8～12月分（5ヶ月）を改定後の単価として自動で按分計算されます。</span></li>
+                <li>「開始期」を入力<br>
+                → 「期首繰越金残高」は開始期の前年の次年度繰越金（データは長期修繕計画総括表の一番下の行）を入力<br>
+                → 現在の積立金を入力（初期値は４５０円）<br>
+                → 改定する場合「何期」から「何円/㎡」にするか入力（初期値は２３期に５２０円に改定）。延べ床面積は無視してよい。</li>
             </ul>
 
-            <h4>2. 主要な修繕の時期とコスト</h4>
+            <h4>2. 主要な修繕・更新計画</h4>
             <ul>
-                <li>大規模修繕やエレベーター更新などの大きな工事の<strong>「実施期」</strong>と<strong>「金額（万円）」</strong>を入力します。自由に工事名を入力できる追加項目も5つあります。</li>
-                <li>ここで入力した金額は、該当する期の「単年支出」として自動的に加算されます。</li>
+                <li>大規模修繕やエレベーター更新などの大きな工事の「実施期」と「金額（万円）」を入力する。</li>
+                <li>計画が新たに作成された場合は、「長期修繕計画総括表」から探して入力する。<br>
+                大規模修繕は「１屋根防水 ～ ７共用内部」の合計額、EV更新は「１４昇降機」、機械式駐車場は「１６立体駐車場設備」、給排水管更新は「８給水設備・９排水設備」にデータが記載されている。</li>
+                <li><span style="color: #ef4444; font-weight: bold;">概算額は税抜きなので消費税１０％を加えた額を入力する。</span></li>
+                <li>ドローン検査や屋根防水を別に実施するなどの場合は追加工事として時期と金額入力する。</li>
             </ul>
 
-            <h4>3. 単年支出内訳の微調整</h4>
+            <h4>3. 単年支出内訳の入力</h4>
             <ul>
-                <li>「各期の単年支出内訳」のボックスの数値を直接書き換えることで、細かい支出額（日常修繕費など）を個別に調整できます。</li>
+                <li>「各期の単年支出内訳」の数値は２０期に作成した概算計画の金額が初期値になっている。<br>
+                金額が変更になった場合は直接書き換え、保存し次に利用するときに保存データを読み込むこともできる。（アプリを直接書き換えて初期値を変えることもできる。）</li>
+                <li>金額データは「長期修繕計画総括表」の「支出年度合計」の各期の金額を入力する必要があるが、<strong>大規模修繕・EV更新・駐車場・給排水管更新がある年については、その金額（税込み）を引いた金額を入力する必要があり、ここは少しややこしい。</strong></li>
             </ul>
 
             <h4>4. データの保存と出力（右上ボタン）</h4>
             <ul>
-                <li>💾 <strong>データ保存：</strong> 現在の条件をファイル（JSON）として保存します。</li>
-                <li>📂 <strong>読込：</strong> 保存したファイルを読み込み、シミュレーションを再開できます。</li>
-                <li>📷 <strong>画像保存：</strong> 現在の画面全体を画像（PNG）としてダウンロードします。理事会での報告資料等にご活用ください。</li>
+                <li>💾 <strong>データ保存：</strong> 現在の条件をファイル（JSON）としてPCにダウンロードできる。</li>
+                <li>📂 <strong>読込：</strong> 保存したファイルを読み込み、入力したデータでシミュレーションを再開できる。</li>
+                <li>📷 <strong>画像保存：</strong> 現在の画面全体を画像（PNG）としてダウンロードできる。</li>
             </ul>
+            
+            <div style="text-align: right; margin-top: 25px; font-weight: bold; color: #1e40af;">
+                アプリ作成　２０期理事長
+            </div>
         </div>
     </div>
 </div>
@@ -320,14 +334,12 @@ function updateManualAndCalc() {
         
         let total = baseExpensesMap[p] !== undefined ? baseExpensesMap[p] : 0;
         
-        // 既存の工事
         if (p === parseInt(document.getElementById('repP2').value)) total += parseFloat(document.getElementById('repV2').value) || 0;
         if (p === parseInt(document.getElementById('repP3').value)) total += parseFloat(document.getElementById('repV3').value) || 0;
         if (p === parseInt(document.getElementById('evP').value)) total += parseFloat(document.getElementById('evV').value) || 0;
         if (p === parseInt(document.getElementById('pkgP').value)) total += parseFloat(document.getElementById('pkgV').value) || 0;
         if (p === parseInt(document.getElementById('pipeP').value)) total += parseFloat(document.getElementById('pipeV').value) || 0;
         
-        // カスタム工事1〜5
         if (p === parseInt(document.getElementById('customP1').value)) total += parseFloat(document.getElementById('customV1').value) || 0;
         if (p === parseInt(document.getElementById('customP2').value)) total += parseFloat(document.getElementById('customV2').value) || 0;
         if (p === parseInt(document.getElementById('customP3').value)) total += parseFloat(document.getElementById('customV3').value) || 0;
