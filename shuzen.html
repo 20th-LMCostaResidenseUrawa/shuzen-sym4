@@ -18,6 +18,7 @@
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
+        input[type="text"] { box-sizing: border-box; }
         input::placeholder { color: #cbd5e1; }
 
         .manual-input-area {
@@ -84,6 +85,10 @@
         .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; }
         .modal-body ul { padding-left: 20px; margin-bottom: 15px; }
         .modal-body li { margin-bottom: 8px; }
+        
+        .custom-job-input { width: 120px; margin-bottom: 2px; font-size: 11px; font-weight: bold; color: #92400e; border: 1px solid #fcd34d; border-radius: 4px; padding: 3px 6px; background: rgba(255,255,255,0.7); outline: none; }
+        .custom-job-input:focus { border-color: #f59e0b; background: #fff; }
+        .custom-job-input::placeholder { color: #d1d5db; font-weight: normal; }
     </style>
 </head>
 <body>
@@ -104,7 +109,7 @@
 
             <h4>2. 主要な修繕の時期とコスト</h4>
             <ul>
-                <li>大規模修繕やエレベーター更新などの大きな工事の<strong>「実施期」</strong>と<strong>「金額（万円）」</strong>を入力します。</li>
+                <li>大規模修繕やエレベーター更新などの大きな工事の<strong>「実施期」</strong>と<strong>「金額（万円）」</strong>を入力します。自由に工事名を入力できる追加項目も5つあります。</li>
                 <li>ここで入力した金額は、該当する期の「単年支出」として自動的に加算されます。</li>
             </ul>
 
@@ -203,6 +208,42 @@
                 <input type="number" id="pipeV" value="9487" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
+        
+        <div class="input-group">
+            <input type="text" id="customName1" class="custom-job-input" placeholder="追加工事名①" oninput="calc()">
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="customP1" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="customV1" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="customName2" class="custom-job-input" placeholder="追加工事名②" oninput="calc()">
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="customP2" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="customV2" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="customName3" class="custom-job-input" placeholder="追加工事名③" oninput="calc()">
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="customP3" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="customV3" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="customName4" class="custom-job-input" placeholder="追加工事名④" oninput="calc()">
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="customP4" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="customV4" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="customName5" class="custom-job-input" placeholder="追加工事名⑤" oninput="calc()">
+            <div style="white-space: nowrap; font-size: 13px;">
+                <input type="number" id="customP5" style="width:50px;" oninput="updateManualAndCalc()"> 期
+                <input type="number" id="customV5" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+            </div>
+        </div>
     </div>
 
     <h3>📝 各期の単年支出内訳 (万円)<span class="note">※数字は長期修繕計画総括表の支出年度合計から入力する</span></h3>
@@ -215,8 +256,7 @@
 
     <table>
         <colgroup>
-            <col span="9">
-        </colgroup>
+            <col style="width: 7%;">  <col style="width: 7%;">  <col style="width: 11%;"> <col style="width: 12%;"> <col style="width: 11%;"> <col style="width: 12%;"> <col style="width: 12%;"> <col style="width: 20%;"> <col style="width: 8%;">  </colgroup>
         <thead>
             <tr>
                 <th>西暦</th>
@@ -280,11 +320,19 @@ function updateManualAndCalc() {
         
         let total = baseExpensesMap[p] !== undefined ? baseExpensesMap[p] : 0;
         
+        // 既存の工事
         if (p === parseInt(document.getElementById('repP2').value)) total += parseFloat(document.getElementById('repV2').value) || 0;
         if (p === parseInt(document.getElementById('repP3').value)) total += parseFloat(document.getElementById('repV3').value) || 0;
         if (p === parseInt(document.getElementById('evP').value)) total += parseFloat(document.getElementById('evV').value) || 0;
         if (p === parseInt(document.getElementById('pkgP').value)) total += parseFloat(document.getElementById('pkgV').value) || 0;
         if (p === parseInt(document.getElementById('pipeP').value)) total += parseFloat(document.getElementById('pipeV').value) || 0;
+        
+        // カスタム工事1〜5
+        if (p === parseInt(document.getElementById('customP1').value)) total += parseFloat(document.getElementById('customV1').value) || 0;
+        if (p === parseInt(document.getElementById('customP2').value)) total += parseFloat(document.getElementById('customV2').value) || 0;
+        if (p === parseInt(document.getElementById('customP3').value)) total += parseFloat(document.getElementById('customV3').value) || 0;
+        if (p === parseInt(document.getElementById('customP4').value)) total += parseFloat(document.getElementById('customV4').value) || 0;
+        if (p === parseInt(document.getElementById('customP5').value)) total += parseFloat(document.getElementById('customV5').value) || 0;
         
         currentPeriodExpenses[i] = total;
         
@@ -305,6 +353,12 @@ function syncFromManual(idx) {
     if (p === parseInt(document.getElementById('evP').value)) largeRepairs += parseFloat(document.getElementById('evV').value) || 0;
     if (p === parseInt(document.getElementById('pkgP').value)) largeRepairs += parseFloat(document.getElementById('pkgV').value) || 0;
     if (p === parseInt(document.getElementById('pipeP').value)) largeRepairs += parseFloat(document.getElementById('pipeV').value) || 0;
+    
+    if (p === parseInt(document.getElementById('customP1').value)) largeRepairs += parseFloat(document.getElementById('customV1').value) || 0;
+    if (p === parseInt(document.getElementById('customP2').value)) largeRepairs += parseFloat(document.getElementById('customV2').value) || 0;
+    if (p === parseInt(document.getElementById('customP3').value)) largeRepairs += parseFloat(document.getElementById('customV3').value) || 0;
+    if (p === parseInt(document.getElementById('customP4').value)) largeRepairs += parseFloat(document.getElementById('customV4').value) || 0;
+    if (p === parseInt(document.getElementById('customP5').value)) largeRepairs += parseFloat(document.getElementById('customV5').value) || 0;
     
     baseExpensesMap[p] = typedVal - largeRepairs;
     currentPeriodExpenses[idx] = typedVal;
@@ -408,12 +462,18 @@ function calc() {
 
         let eventsHtml = "";
         const configKeys = [
-            {id:'repP2', valId:'repV2', label:'大規模修繕'},
-            {id:'repP3', valId:'repV3', label:'大規模修繕'},
-            {id:'evP',   valId:'evV',   label:'EV更新'},
+            {id:'repP2', valId:'repV2', label:'2回目大規模修繕'},
+            {id:'repP3', valId:'repV3', label:'3回目大規模修繕'},
+            {id:'evP',   valId:'evV',   label:'EVリニューアル'},
             {id:'pkgP',  valId:'pkgV',  label:'駐車場更新'},
-            {id:'pipeP', valId:'pipeV', label:'配管更新'}
+            {id:'pipeP', valId:'pipeV', label:'給排水管更新'},
+            {id:'customP1', valId:'customV1', label: document.getElementById('customName1').value || '追加工事①'},
+            {id:'customP2', valId:'customV2', label: document.getElementById('customName2').value || '追加工事②'},
+            {id:'customP3', valId:'customV3', label: document.getElementById('customName3').value || '追加工事③'},
+            {id:'customP4', valId:'customV4', label: document.getElementById('customName4').value || '追加工事④'},
+            {id:'customP5', valId:'customV5', label: document.getElementById('customName5').value || '追加工事⑤'}
         ];
+        
         configKeys.forEach(c => {
             const v = parseFloat(document.getElementById(c.valId).value) || 0;
             if (p === parseInt(document.getElementById(c.id).value) && v > 0) {
@@ -477,6 +537,13 @@ function saveData() {
         evP: document.getElementById('evP').value,     evV: document.getElementById('evV').value,
         pkgP: document.getElementById('pkgP').value,   pkgV: document.getElementById('pkgV').value,
         pipeP: document.getElementById('pipeP').value, pipeV: document.getElementById('pipeV').value,
+        
+        customName1: document.getElementById('customName1').value, customP1: document.getElementById('customP1').value, customV1: document.getElementById('customV1').value,
+        customName2: document.getElementById('customName2').value, customP2: document.getElementById('customP2').value, customV2: document.getElementById('customV2').value,
+        customName3: document.getElementById('customName3').value, customP3: document.getElementById('customP3').value, customV3: document.getElementById('customV3').value,
+        customName4: document.getElementById('customName4').value, customP4: document.getElementById('customP4').value, customV4: document.getElementById('customV4').value,
+        customName5: document.getElementById('customName5').value, customP5: document.getElementById('customP5').value, customV5: document.getElementById('customV5').value,
+        
         baseExpensesMap: baseExpensesMap
     };
     const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
@@ -511,6 +578,12 @@ function loadData(event) {
             document.getElementById('evP').value = data.evP;     document.getElementById('evV').value = data.evV;
             document.getElementById('pkgP').value = data.pkgP;   document.getElementById('pkgV').value = data.pkgV;
             document.getElementById('pipeP').value = data.pipeP; document.getElementById('pipeV').value = data.pipeV;
+            
+            document.getElementById('customName1').value = data.customName1 || ""; document.getElementById('customP1').value = data.customP1 || ""; document.getElementById('customV1').value = data.customV1 || "";
+            document.getElementById('customName2').value = data.customName2 || ""; document.getElementById('customP2').value = data.customP2 || ""; document.getElementById('customV2').value = data.customV2 || "";
+            document.getElementById('customName3').value = data.customName3 || ""; document.getElementById('customP3').value = data.customP3 || ""; document.getElementById('customV3').value = data.customV3 || "";
+            document.getElementById('customName4').value = data.customName4 || ""; document.getElementById('customP4').value = data.customP4 || ""; document.getElementById('customV4').value = data.customV4 || "";
+            document.getElementById('customName5').value = data.customName5 || ""; document.getElementById('customP5').value = data.customP5 || ""; document.getElementById('customV5').value = data.customV5 || "";
             
             if (data.baseExpensesMap) {
                 baseExpensesMap = data.baseExpensesMap;
