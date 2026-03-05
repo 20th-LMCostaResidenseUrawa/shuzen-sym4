@@ -11,13 +11,14 @@
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         h2 { border-left: 5px solid #2563eb; padding-left: 10px; margin: 0; font-size: 18px; }
         
-        .setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        /* ▼ 入力エリアのレイアウトを「グリッド」から「フレックス」に変更し、左詰めでコンパクトに配置 ▼ */
+        .setup { display: flex; flex-wrap: wrap; gap: 15px 25px; margin-bottom: 20px; background: #f8fafc; padding: 15px 20px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: flex-end; }
         .input-group { display: flex; flex-direction: column; }
         label { font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 4px; }
         
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; }
+        input[type="number"] { -moz-appearance: textfield; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
 
         .manual-input-area {
             display: grid;
@@ -134,26 +135,38 @@
     </div>
     
     <div class="setup">
-        <div class="input-group"><label>開始期</label><input type="number" id="startP" value="21" oninput="initManualInputs(); updateManualAndCalc();"></div>
-        <div class="input-group"><label>期首繰越金残高 (万円)</label><input type="number" id="bal" value="2611.2" step="0.1" oninput="calc()"></div>
-        <div class="input-group"><label>延べ床面積 (㎡)</label><input type="number" id="area" value="3042.41" step="0.01" oninput="calc()"></div>
-        <div class="input-group"><label>現在の積立単価 (円/㎡)</label><input type="number" id="price" value="450" oninput="calc()"></div>
-        <div class="input-group" style="background: #ecfdf5; border-radius: 4px; padding: 4px;">
-            <label style="color: #059669;">積立金改定プラン</label>
-            <div>
-                <input type="number" id="reviseP" value="23" style="width:40px" oninput="calc()"> 期から
-                <input type="number" id="reviseV" value="520" style="width:60px" oninput="calc()"> 円/㎡に
+        <div class="input-group">
+            <label>開始期</label>
+            <input type="number" id="startP" value="21" style="width: 70px;" oninput="initManualInputs(); updateManualAndCalc();">
+        </div>
+        <div class="input-group">
+            <label>期首繰越金残高 (万円)</label>
+            <input type="number" id="bal" value="2611.2" step="0.1" style="width: 120px;" oninput="calc()">
+        </div>
+        <div class="input-group">
+            <label>延べ床面積 (㎡)</label>
+            <input type="number" id="area" value="3042.41" step="0.01" style="width: 100px;" oninput="calc()">
+        </div>
+        <div class="input-group">
+            <label>現在の積立単価 (円/㎡)</label>
+            <input type="number" id="price" value="450" style="width: 90px;" oninput="calc()">
+        </div>
+        <div class="input-group" style="background: #ecfdf5; border-radius: 4px; padding: 8px 12px;">
+            <label style="color: #059669; margin-bottom: 2px;">積立金改定プラン</label>
+            <div style="font-size: 13px;">
+                <input type="number" id="reviseP" value="23" style="width:50px" oninput="calc()"> 期から
+                <input type="number" id="reviseV" value="520" style="width:60px; margin-left: 4px;" oninput="calc()"> 円/㎡に
             </div>
         </div>
     </div>
 
     <h3>🛠 主要な修繕の時期とコスト<span class="note">※コストは概算額に消費税10％を加えたものを入力する</span></h3>
     <div class="setup" style="background: #fffbeb;">
-        <div class="input-group"><label>2回目大規模修繕</label><div><input type="number" id="repP2" value="27" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV2" value="12914" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>3回目大規模修繕</label><div><input type="number" id="repP3" value="40" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV3" value="12201" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>EVリニューアル</label><div><input type="number" id="evP" value="25" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="evV" value="3949" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>駐車場更新</label><div><input type="number" id="pkgP" value="29" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="pkgV" value="3630" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
-        <div class="input-group"><label>給排水管更新</label><div><input type="number" id="pipeP" value="45" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="pipeV" value="9487" style="width:70px" oninput="updateManualAndCalc()"> 万</div></div>
+        <div class="input-group"><label>2回目大規模修繕</label><div><input type="number" id="repP2" value="27" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV2" value="12914" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
+        <div class="input-group"><label>3回目大規模修繕</label><div><input type="number" id="repP3" value="40" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="repV3" value="12201" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
+        <div class="input-group"><label>EVリニューアル</label><div><input type="number" id="evP" value="25" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="evV" value="3949" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
+        <div class="input-group"><label>駐車場更新</label><div><input type="number" id="pkgP" value="29" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="pkgV" value="3630" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
+        <div class="input-group"><label>給排水管更新</label><div><input type="number" id="pipeP" value="45" style="width:40px" oninput="updateManualAndCalc()"> 期 <input type="number" id="pipeV" value="9487" style="width:70px; margin-left:4px;" oninput="updateManualAndCalc()"> 万</div></div>
     </div>
 
     <h3>📝 各期の単年支出内訳 (万円)<span class="note">※数字は長期修繕計画総括表の支出年度合計から入力する</span></h3>
@@ -198,7 +211,6 @@ let baseExpensesMap = {
 
 let currentPeriodExpenses = [];
 
-// ▼ 数値を小数点第1位まで表示するためのフォーマット関数 ▼
 function formatNum(num) {
     if (num === 0) return '0.0';
     return (Math.round(num * 10) / 10).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
@@ -267,7 +279,6 @@ function syncFromManual(idx) {
 function calc() {
     const startP = parseInt(document.getElementById('startP').value) || BASE_PERIOD;
     let bal = parseFloat(document.getElementById('bal').value) || 0;
-    // ▼ 延べ床面積を取得 ▼
     const currentArea = parseFloat(document.getElementById('area').value) || 0;
     const currentPrice = parseFloat(document.getElementById('price').value) || 0;
     const reviseP = parseInt(document.getElementById('reviseP').value) || 999;
@@ -309,7 +320,6 @@ function calc() {
         const year = BASE_YEAR + (p - BASE_PERIOD);
         const exp = currentPeriodExpenses[i] || 0;
         const unitPrice = getUnitPrice(p);
-        // ▼ 面積から収入を計算 ▼
         const incomeY = (unitPrice * currentArea * 12) / 10000;
         
         cumIncome += incomeY;
@@ -370,7 +380,7 @@ function saveData() {
     const data = {
         startP: document.getElementById('startP').value,
         bal: document.getElementById('bal').value,
-        area: document.getElementById('area').value, // 面積も保存
+        area: document.getElementById('area').value,
         price: document.getElementById('price').value,
         reviseP: document.getElementById('reviseP').value,
         reviseV: document.getElementById('reviseV').value,
@@ -398,7 +408,6 @@ function loadData(event) {
             const data = JSON.parse(e.target.result);
             document.getElementById('startP').value = data.startP;
             document.getElementById('bal').value = data.bal;
-            // 面積の読込（古いデータの場合は3042.41をフォールバック）
             document.getElementById('area').value = data.area || 3042.41; 
             document.getElementById('price').value = data.price;
             document.getElementById('reviseP').value = data.reviseP;
