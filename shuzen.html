@@ -76,7 +76,6 @@
             border-color: #fcd34d;
         }
 
-        /* ▼ マイナス入力時（一時金や借入など）の紫バッジ ▼ */
         .negative-badge {
             background: #f3e8ff;
             color: #6d28d9;
@@ -92,7 +91,7 @@
         .btn:hover { opacity: 0.9; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; backdrop-filter: blur(2px); }
-        .modal-content { background: white; width: 90%; max-width: 700px; margin: 5vh auto; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 85vh; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 750px; margin: 5vh auto; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 85vh; overflow-y: auto; }
         .modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; color: #64748b; cursor: pointer; line-height: 1; text-decoration: none; }
         .modal-close:hover { color: #ef4444; }
         .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; margin-bottom: 8px; }
@@ -106,6 +105,9 @@
         .custom-job-input { width: 120px; margin-bottom: 2px; font-size: 11px; font-weight: bold; color: #92400e; border: 1px solid #fcd34d; border-radius: 4px; padding: 3px 6px; background: rgba(255,255,255,0.7); outline: none; }
         .custom-job-input:focus { border-color: #f59e0b; background: #fff; }
         .custom-job-input::placeholder { color: #d1d5db; font-weight: normal; }
+
+        /* ヘルプ文言内の強調表示用CSS */
+        .highlight-text { color: #ef4444; font-weight: bold; text-decoration: underline; text-underline-offset: 3px; }
     </style>
 </head>
 <body>
@@ -115,36 +117,41 @@
         <a class="modal-close" onclick="closeModal(event)">&times;</a>
         <h2 style="border-left: 5px solid #f59e0b; padding-left: 10px; margin-bottom: 15px;">📖 シミュレーターの使い方</h2>
         <div class="modal-body">
-            <p>積立金改定・計画変更を実施した場合に将来収支がどうなるのか「目安」を知る目的で作成しました。実際の数字とは若干差異が出ます。感覚的に使えると思いますが、新たに計画が更新された場合は変更データを入力する必要があります。初期値は２０期に作成した概算計画の金額になっていますが、変更データを保存し再度読み込むことで計画が改定されても対応できます。（こちらでアプリの初期値を書き換えることも可能です。）</p>
+            <p>積立金改定・計画変更を実施した場合に将来収支がどうなるのか「目安」を知る目的で作成しました。　実際の数字とは若干差異が出ます。　感覚的に使えると思いますが、新たに計画が更新された場合は変更データを入力する必要があります。　初期値は２０期に作成した概算計画の金額になっていますが、変更データを保存し再度読み込むことで計画が改定されても対応できます。　（こちらでアプリの初期値を書き換えることも可能です。）</p>
 
             <h4>1. 20期作成データでシミュレーションする</h4>
             <div style="padding-left: 1em; margin-bottom: 15px;">
-                <p>この場合は、データ入力欄に改定額や修繕の時期・金額を入力すれば、下に試算結果が表示されます。単年支出内訳は20期作成計画の金額ですが、5１期以降はデータがないので「０」となります。</p>
+                <p>この場合はデータ入力欄に改定額や修繕の時期・金額を入力すれば、下に試算結果が表示されます。20期作成計画は50期までのデータしかありませんので、単年支出内訳金額は5１期以降「０」となりますので開始期を変更する場合はご留意ください。</p>
             </div>
 
             <h4>2. 新たに修繕計画が改定された場合</h4>
             <div style="padding-left: 1em; margin-bottom: 15px;">
-                <p style="margin-bottom: 8px;">最新の長期修繕計画総括表から初期データを入力する必要があります。</p>
+                <p style="margin-bottom: 8px;">作成した長期修繕計画総括表から初期データを入力する必要があります。</p>
                 
                 <div class="help-list-item">
                     <div class="help-list-mark">①</div>
-                    <div class="help-list-desc">「開始期」・ 「現在の積立金」・改定する場合「何期」から「何円/㎡」にするか入力</div>
+                    <div class="help-list-desc">「開始期」<br>「現在の積立金」<br>改定予定がある場合「何期」から「何円/㎡」にするか<br>を入力する。</div>
                 </div>
                 
                 <div class="help-list-item">
                     <div class="help-list-mark">②</div>
-                    <div class="help-list-desc">「期首繰越金残高」を入力</div>
+                    <div class="help-list-desc">「期首繰越金残高」を入力する。</div>
                 </div>
-                <div class="help-sub-desc">長期修繕計画総括表の一番下の次年度繰越金から開始期前年の金額</div>
+                <div class="help-sub-desc">期首繰越金残高は長期修繕計画総括表の一番下の「次年度繰越金」から開始期前年の金額を入力する。</div>
                 
                 <div class="help-list-item">
                     <div class="help-list-mark">③</div>
                     <div class="help-list-desc">「主要な修繕・更新計画」の入力</div>
                 </div>
                 <div class="help-sub-desc">
-                    大規模修繕やエレベーター更新などの大きな工事の「実施期」と「金額」を入力します。<br>
-                    「長期修繕計画総括表」からデータを探して入力する必要があります。大規模修繕は「１.屋根防水 ～ ７.共用内部」の合計額、エレベーター更新は「１４.昇降機」、機械式駐車場は「１６.立体駐車場設備」、給排水管更新は「８.給水設備・９.排水設備」の行にデータが記載されています。概算額は税抜きなので消費税１０％を加えた額を入力してください。<br>
-                    ドローン検査や屋根防水を別に実施するなどの場合は「追加工事」に時期と金額入力してください。一時金や借入金などがある場合はマイナスの金額を入力してください。
+                    「長期修繕計画総括表」からデータを探して主要な修繕・更新計画の「実施期」と「金額」を入力する。　<br>
+                    大規模修繕は&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;「１.屋根防水 ～ ７.共用内部」の合計額<br>
+                    エレベーター更新は「１４.昇降機」<br>
+                    機械式駐車場は&nbsp;&nbsp;&nbsp;&nbsp;「１６.立体駐車場設備」<br>
+                    給排水管更新は&nbsp;&nbsp;&nbsp;&nbsp;「８.給水設備・９.排水設備」<br>
+                    にデータが記載されています。<br>
+                    <span class="highlight-text">概算額は税抜きなので消費税１０％を加えた額を入力してください。</span><br>
+                    ドローン検査や屋根防水を別に実施するなどの場合は「追加工事」に時期と金額入力する。
                 </div>
                 
                 <div class="help-list-item">
@@ -152,11 +159,16 @@
                     <div class="help-list-desc">「単年支出内訳の入力」</div>
                 </div>
                 <div class="help-sub-desc">
-                    「各期の単年支出内訳」の数値は「長期修繕計画総括表」の「支出年度合計」の各期の金額を入力しますが、大規模修繕・エレベーター更新・駐車場更新・給排水管更新がある年については、上記で入力した金額（税込み）を引いた金額を入力する必要があり、ここは少し混乱するかもしれません。
+                    「各期の単年支出内訳」の数値は「長期修繕計画総括表」の「支出年度合計」の各期の金額を入力します。　注意点としては<span class="highlight-text">大規模修繕・エレベーター更新・駐車場更新・給排水管更新がある年については、上記で入力した金額（税込み）を引いた金額を入力する必要があり、ここは少し混乱するかもしれません。</span>
                 </div>
             </div>
 
-            <h4>３. データの保存と出力（右上ボタン）</h4>
+            <h4>３． 借入金や一時金</h4>
+            <div style="padding-left: 1em; margin-bottom: 15px;">
+                <p>金融機関からの借入が発生した場合や一時金を徴収した場合は、追加工事の欄に「借入」「一時金」などのように入力し、金額にマイナスを付けて入力してください。</p>
+            </div>
+
+            <h4>４． データの保存と出力（右上ボタン）</h4>
             <div style="padding-left: 1em; margin-bottom: 15px;">
                 <div class="help-list-item">
                     <div class="help-list-mark" style="width: 1.8em;">💾</div>
@@ -509,7 +521,6 @@ function calc() {
 
         let eventsHtml = "";
         
-        // ▼ 設定キーの定義 ▼
         const configKeys = [
             {id:'repP2', valId:'repV2', label:'2回目大規模修繕', isCustom: false},
             {id:'repP3', valId:'repV3', label:'3回目大規模修繕', isCustom: false},
@@ -523,18 +534,14 @@ function calc() {
             {id:'customP5', valId:'customV5', label: document.getElementById('customName5').value || '追加工事⑤', isCustom: true}
         ];
         
-        // ▼ 0以外の数値（マイナス含む）が入力されていればバッジを表示 ▼
         configKeys.forEach(c => {
             const v = parseFloat(document.getElementById(c.valId).value) || 0;
             if (p === parseInt(document.getElementById(c.id).value) && v !== 0) {
                 if (v < 0) {
-                    // マイナス入力時（一時金など）は紫バッジ
                     eventsHtml += `<span class="event-badge negative-badge">${c.label}</span> `;
                 } else if(c.isCustom) {
-                    // カスタム追加工事はオレンジバッジ
                     eventsHtml += `<span class="event-badge custom-badge">${c.label}</span> `;
                 } else {
-                    // 通常の修繕は青バッジ
                     eventsHtml += `<span class="event-badge">${c.label}</span> `;
                 }
             }
