@@ -70,11 +70,17 @@
             white-space: normal;
         }
         
-        /* ▼ 追加工事用のバッジデザイン（オレンジ系） ▼ */
         .custom-badge {
             background: #ffedd5;
             color: #92400e;
             border-color: #fcd34d;
+        }
+
+        /* ▼ マイナス入力時（一時金や借入など）の紫バッジ ▼ */
+        .negative-badge {
+            background: #f3e8ff;
+            color: #6d28d9;
+            border-color: #ddd6fe;
         }
 
         .action-buttons { display: flex; gap: 8px; font-size: 12px; }
@@ -138,7 +144,7 @@
                 <div class="help-sub-desc">
                     大規模修繕やエレベーター更新などの大きな工事の「実施期」と「金額」を入力します。<br>
                     「長期修繕計画総括表」からデータを探して入力する必要があります。大規模修繕は「１.屋根防水 ～ ７.共用内部」の合計額、エレベーター更新は「１４.昇降機」、機械式駐車場は「１６.立体駐車場設備」、給排水管更新は「８.給水設備・９.排水設備」の行にデータが記載されています。概算額は税抜きなので消費税１０％を加えた額を入力してください。<br>
-                    ドローン検査や屋根防水を別に実施するなどの場合は「追加工事」に時期と金額入力してください。
+                    ドローン検査や屋根防水を別に実施するなどの場合は「追加工事」に時期と金額入力してください。一時金や借入金などがある場合はマイナスの金額を入力してください。
                 </div>
                 
                 <div class="help-list-item">
@@ -503,7 +509,7 @@ function calc() {
 
         let eventsHtml = "";
         
-        // ▼ 追加工事は isCustom フラグをつける ▼
+        // ▼ 設定キーの定義 ▼
         const configKeys = [
             {id:'repP2', valId:'repV2', label:'2回目大規模修繕', isCustom: false},
             {id:'repP3', valId:'repV3', label:'3回目大規模修繕', isCustom: false},
@@ -517,13 +523,18 @@ function calc() {
             {id:'customP5', valId:'customV5', label: document.getElementById('customName5').value || '追加工事⑤', isCustom: true}
         ];
         
+        // ▼ 0以外の数値（マイナス含む）が入力されていればバッジを表示 ▼
         configKeys.forEach(c => {
             const v = parseFloat(document.getElementById(c.valId).value) || 0;
-            if (p === parseInt(document.getElementById(c.id).value) && v > 0) {
-                // 追加工事なら custom-badge クラスを付与
-                if(c.isCustom) {
+            if (p === parseInt(document.getElementById(c.id).value) && v !== 0) {
+                if (v < 0) {
+                    // マイナス入力時（一時金など）は紫バッジ
+                    eventsHtml += `<span class="event-badge negative-badge">${c.label}</span> `;
+                } else if(c.isCustom) {
+                    // カスタム追加工事はオレンジバッジ
                     eventsHtml += `<span class="event-badge custom-badge">${c.label}</span> `;
                 } else {
+                    // 通常の修繕は青バッジ
                     eventsHtml += `<span class="event-badge">${c.label}</span> `;
                 }
             }
@@ -541,7 +552,7 @@ function calc() {
             <td>${p}期</td>
             <td>${formatNum(incomeY)}</td>
             <td class="cum-col">${formatNum(cumIncome)}</td>
-            <td>${exp > 0 ? formatNum(exp) : '-'}</td>
+            <td>${exp !== 0 ? formatNum(exp) : '-'}</td>
             <td class="cum-col">${formatNum(cumExp)}</td>
             <td style="font-weight:bold">${formatNum(currentBal)}</td>
             <td>${eventsHtml}</td>
