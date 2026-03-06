@@ -69,6 +69,13 @@
             border: 1px solid #bfdbfe;
             white-space: normal;
         }
+        
+        /* ▼ 追加工事用のバッジデザイン（オレンジ系） ▼ */
+        .custom-badge {
+            background: #ffedd5;
+            color: #92400e;
+            border-color: #fcd34d;
+        }
 
         .action-buttons { display: flex; gap: 8px; font-size: 12px; }
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: flex; align-items: center; gap: 4px; }
@@ -84,7 +91,6 @@
         .modal-close:hover { color: #ef4444; }
         .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; margin-bottom: 8px; }
         
-        /* ▼ ヘルプ文言の左側を揃えるためのCSS ▼ */
         .modal-body p { font-size: 12px; line-height: 1.6; color: #475569; margin-top: 0; margin-bottom: 10px; }
         .help-list-item { display: flex; margin-bottom: 4px; font-size: 12px; line-height: 1.6; color: #475569; }
         .help-list-mark { flex-shrink: 0; width: 1.6em; font-weight: bold; }
@@ -496,23 +502,30 @@ function calc() {
         currentBal = currentBal + incomeY - exp;
 
         let eventsHtml = "";
+        
+        // ▼ 追加工事は isCustom フラグをつける ▼
         const configKeys = [
-            {id:'repP2', valId:'repV2', label:'2回目大規模修繕'},
-            {id:'repP3', valId:'repV3', label:'3回目大規模修繕'},
-            {id:'evP',   valId:'evV',   label:'EVリニューアル'},
-            {id:'pkgP',  valId:'pkgV',  label:'駐車場更新'},
-            {id:'pipeP', valId:'pipeV', label:'給排水管更新'},
-            {id:'customP1', valId:'customV1', label: document.getElementById('customName1').value || '追加工事①'},
-            {id:'customP2', valId:'customV2', label: document.getElementById('customName2').value || '追加工事②'},
-            {id:'customP3', valId:'customV3', label: document.getElementById('customName3').value || '追加工事③'},
-            {id:'customP4', valId:'customV4', label: document.getElementById('customName4').value || '追加工事④'},
-            {id:'customP5', valId:'customV5', label: document.getElementById('customName5').value || '追加工事⑤'}
+            {id:'repP2', valId:'repV2', label:'2回目大規模修繕', isCustom: false},
+            {id:'repP3', valId:'repV3', label:'3回目大規模修繕', isCustom: false},
+            {id:'evP',   valId:'evV',   label:'EVリニューアル', isCustom: false},
+            {id:'pkgP',  valId:'pkgV',  label:'駐車場更新', isCustom: false},
+            {id:'pipeP', valId:'pipeV', label:'給排水管更新', isCustom: false},
+            {id:'customP1', valId:'customV1', label: document.getElementById('customName1').value || '追加工事①', isCustom: true},
+            {id:'customP2', valId:'customV2', label: document.getElementById('customName2').value || '追加工事②', isCustom: true},
+            {id:'customP3', valId:'customV3', label: document.getElementById('customName3').value || '追加工事③', isCustom: true},
+            {id:'customP4', valId:'customV4', label: document.getElementById('customName4').value || '追加工事④', isCustom: true},
+            {id:'customP5', valId:'customV5', label: document.getElementById('customName5').value || '追加工事⑤', isCustom: true}
         ];
         
         configKeys.forEach(c => {
             const v = parseFloat(document.getElementById(c.valId).value) || 0;
             if (p === parseInt(document.getElementById(c.id).value) && v > 0) {
-                eventsHtml += `<span class="event-badge">${c.label}</span> `;
+                // 追加工事なら custom-badge クラスを付与
+                if(c.isCustom) {
+                    eventsHtml += `<span class="event-badge custom-badge">${c.label}</span> `;
+                } else {
+                    eventsHtml += `<span class="event-badge">${c.label}</span> `;
+                }
             }
         });
 
