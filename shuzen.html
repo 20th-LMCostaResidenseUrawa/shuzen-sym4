@@ -79,12 +79,17 @@
         .btn:hover { opacity: 0.9; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; backdrop-filter: blur(2px); }
-        .modal-content { background: white; width: 90%; max-width: 600px; margin: 5vh auto; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 85vh; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 700px; margin: 5vh auto; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 85vh; overflow-y: auto; }
         .modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; color: #64748b; cursor: pointer; line-height: 1; text-decoration: none; }
         .modal-close:hover { color: #ef4444; }
-        .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; margin-bottom: 5px; }
+        .modal-body h4 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 20px; margin-bottom: 8px; }
         
+        /* ▼ ヘルプ文言の左側を揃えるためのCSS ▼ */
         .modal-body p { font-size: 12px; line-height: 1.6; color: #475569; margin-top: 0; margin-bottom: 10px; }
+        .help-list-item { display: flex; margin-bottom: 4px; font-size: 12px; line-height: 1.6; color: #475569; }
+        .help-list-mark { flex-shrink: 0; width: 1.6em; font-weight: bold; }
+        .help-list-desc { flex-grow: 1; }
+        .help-sub-desc { padding-left: 1.6em; margin-bottom: 10px; font-size: 12px; line-height: 1.6; color: #475569; }
         
         .custom-job-input { width: 120px; margin-bottom: 2px; font-size: 11px; font-weight: bold; color: #92400e; border: 1px solid #fcd34d; border-radius: 4px; padding: 3px 6px; background: rgba(255,255,255,0.7); outline: none; }
         .custom-job-input:focus { border-color: #f59e0b; background: #fff; }
@@ -96,24 +101,63 @@
 <div id="helpModal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <a class="modal-close" onclick="closeModal(event)">&times;</a>
-        <h2 style="border-left: 5px solid #f59e0b; padding-left: 10px; margin-bottom: 10px;">📖 シミュレーターの使い方</h2>
+        <h2 style="border-left: 5px solid #f59e0b; padding-left: 10px; margin-bottom: 15px;">📖 シミュレーターの使い方</h2>
         <div class="modal-body">
-            <p>積立金改定・計画変更を実施した場合に将来収支がどうなるのか「目安」を知る目的で作成しました。実際の数字とは若干差異が出ます。初期値は２０期に作成した概算計画のものになっていますが、手入力したデータを保存し再度読み込むこともできますし、ご要望あればアプリを直接書き換えることも可能です。感覚的に使えると思いますが、新たに計画が更新された場合は、データの書き換えが必要で、変更データ入力は少し面倒だと思います。一度入力すれば保存して読み込みできます。</p>
-            
-            <h4>1. 基本設定</h4>
-            <p>「開始期」を入力→ 「期首繰越金残高」は開始期の前年の次年度繰越金（データは長期修繕計画総括表の一番下の行）を入力→ 現在の積立金を入力（初期値は４５０円） → 改定する場合「何期」から「何円/㎡」にするか入力（初期値は２３期に５２０円に改定）。延べ床面積は無視してよい。</p>
+            <p>積立金改定・計画変更を実施した場合に将来収支がどうなるのか「目安」を知る目的で作成しました。実際の数字とは若干差異が出ます。感覚的に使えると思いますが、新たに計画が更新された場合は変更データを入力する必要があります。初期値は２０期に作成した概算計画の金額になっていますが、変更データを保存し再度読み込むことで計画が改定されても対応できます。（こちらでアプリの初期値を書き換えることも可能です。）</p>
 
-            <h4>2. 主要な修繕・更新計画</h4>
-            <p>大規模修繕やエレベーター更新などの大きな工事の「実施期」と「金額（万円）」を入力する。計画が新たに作成された場合は、「長期修繕計画総括表」から探して入力する。大規模修繕は「１屋根防水～ ７共用内部」の合計額、EV更新は「１４昇降機」、機械式駐車場は「１６立体駐車場設備」、給排水管更新は「８給水設備・９排水設備」にデータが記載されている。概算額は税抜きなので消費税１０％を加えた額を入力する。ドローン検査や屋根防水を別に実施するなどの場合は追加工事として時期と金額入力する。</p>
+            <h4>1. 20期作成データでシミュレーションする</h4>
+            <div style="padding-left: 1em; margin-bottom: 15px;">
+                <p>この場合は、データ入力欄に改定額や修繕の時期・金額を入力すれば、下に試算結果が表示されます。単年支出内訳は20期作成計画の金額ですが、5１期以降はデータがないので「０」となります。</p>
+            </div>
 
-            <h4>3. 単年支出内訳の入力</h4>
-            <p>「各期の単年支出内訳」の数値は２０期に作成した概算計画の金額が初期値になっている。金額が変更になった場合は直接書き換え、保存し次に利用するときに保存データを読み込むこともできる。（アプリを直接書き換えて初期値を変えることもできる。）金額データは「長期修繕計画総括表」の「支出年度合計」の各期の金額を入力する必要があるが、大規模修繕・EV更新・駐車場・給排水管更新がある年については、その金額（税込み）を引いた金額を入力する必要があり、ここは少しややこしい。</p>
+            <h4>2. 新たに修繕計画が改定された場合</h4>
+            <div style="padding-left: 1em; margin-bottom: 15px;">
+                <p style="margin-bottom: 8px;">最新の長期修繕計画総括表から初期データを入力する必要があります。</p>
+                
+                <div class="help-list-item">
+                    <div class="help-list-mark">①</div>
+                    <div class="help-list-desc">「開始期」・ 「現在の積立金」・改定する場合「何期」から「何円/㎡」にするか入力</div>
+                </div>
+                
+                <div class="help-list-item">
+                    <div class="help-list-mark">②</div>
+                    <div class="help-list-desc">「期首繰越金残高」を入力</div>
+                </div>
+                <div class="help-sub-desc">長期修繕計画総括表の一番下の次年度繰越金から開始期前年の金額</div>
+                
+                <div class="help-list-item">
+                    <div class="help-list-mark">③</div>
+                    <div class="help-list-desc">「主要な修繕・更新計画」の入力</div>
+                </div>
+                <div class="help-sub-desc">
+                    大規模修繕やエレベーター更新などの大きな工事の「実施期」と「金額」を入力します。<br>
+                    「長期修繕計画総括表」からデータを探して入力する必要があります。大規模修繕は「１.屋根防水 ～ ７.共用内部」の合計額、エレベーター更新は「１４.昇降機」、機械式駐車場は「１６.立体駐車場設備」、給排水管更新は「８.給水設備・９.排水設備」の行にデータが記載されています。概算額は税抜きなので消費税１０％を加えた額を入力してください。<br>
+                    ドローン検査や屋根防水を別に実施するなどの場合は「追加工事」に時期と金額入力してください。
+                </div>
+                
+                <div class="help-list-item">
+                    <div class="help-list-mark">④</div>
+                    <div class="help-list-desc">「単年支出内訳の入力」</div>
+                </div>
+                <div class="help-sub-desc">
+                    「各期の単年支出内訳」の数値は「長期修繕計画総括表」の「支出年度合計」の各期の金額を入力しますが、大規模修繕・エレベーター更新・駐車場更新・給排水管更新がある年については、上記で入力した金額（税込み）を引いた金額を入力する必要があり、ここは少し混乱するかもしれません。
+                </div>
+            </div>
 
-            <h4>4. データの保存と出力（右上ボタン）</h4>
-            <p>💾 データ保存： 現在の条件をファイル（JSON）としてPCにダウンロードできる。 📂 読込： 保存したファイルを読み込み、入力したデータでシミュレーションを再開できる。 📷 画像保存： 現在の画面全体を画像（PNG）としてダウンロードできる。</p>
-            
-            <div style="text-align: right; margin-top: 25px; font-weight: bold; color: #1e40af;">
-                アプリ作成　２０期理事長
+            <h4>３. データの保存と出力（右上ボタン）</h4>
+            <div style="padding-left: 1em; margin-bottom: 15px;">
+                <div class="help-list-item">
+                    <div class="help-list-mark" style="width: 1.8em;">💾</div>
+                    <div class="help-list-desc">データ保存： 現在の条件をファイル（JSON）としてPCにダウンロードできる。</div>
+                </div>
+                <div class="help-list-item">
+                    <div class="help-list-mark" style="width: 1.8em;">📂</div>
+                    <div class="help-list-desc">読込： 保存したファイルを読み込み、入力したデータでシミュレーションを再開できる。</div>
+                </div>
+                <div class="help-list-item">
+                    <div class="help-list-mark" style="width: 1.8em;">📷</div>
+                    <div class="help-list-desc">画像保存： 現在の画面全体を画像（PNG）としてダウンロードできる。</div>
+                </div>
             </div>
         </div>
     </div>
