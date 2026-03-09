@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>LMコスタレジデンス浦和・修繕積立金シミュレーター</title>
+    <title>LMコスタレジデンス浦和・修繕積立金シミュレーター（20期version)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0f4f8; padding: 20px; font-size: 13px; color: #333; line-height: 1.4; }
@@ -43,7 +43,7 @@
         .bar.plus { background: #3b82f6; border-radius: 2px 2px 0 0; }
         .bar.minus { background: #ef4444; border-radius: 0 0 2px 2px; }
         .bar-label { position: absolute; font-size: 8px; white-space: nowrap; transform: rotate(-45deg); font-weight: bold; z-index: 3;}
-        .p-label { position: absolute; bottom: -30px; font-size: 9px; color: #64748b; white-space: nowrap; }
+        .p-label { position: absolute; bottom: -18px; font-size: 9px; color: #000; white-space: nowrap; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; table-layout: fixed; }
         th, td { border: 1px solid #e2e8f0; padding: 8px 4px; text-align: center; vertical-align: middle; overflow: hidden; }
@@ -106,7 +106,6 @@
         .custom-job-input:focus { border-color: #f59e0b; background: #fff; }
         .custom-job-input::placeholder { color: #d1d5db; font-weight: normal; }
 
-        /* ヘルプ文言内の強調表示用CSS */
         .highlight-text { color: #ef4444; font-weight: bold; text-decoration: underline; text-underline-offset: 3px; }
     </style>
 </head>
@@ -117,55 +116,51 @@
         <a class="modal-close" onclick="closeModal(event)">&times;</a>
         <h2 style="border-left: 5px solid #f59e0b; padding-left: 10px; margin-bottom: 15px;">📖 シミュレーターの使い方</h2>
         <div class="modal-body">
-            <p>積立金改定・計画変更を実施した場合に将来収支がどうなるのか「目安」を知る目的で作成しました。　実際の数字とは若干差異が出ます。　感覚的に使えると思いますが、新たに計画が更新された場合は変更データを入力する必要があります。　初期値は２０期に作成した概算計画の金額になっていますが、変更データを保存し再度読み込むことで計画が改定されても対応できます。　（こちらでアプリの初期値を書き換えることも可能です。）</p>
+            <p>積立金改定・計画変更を実施した場合に将来収支がどうなるのか「目安」を表示します。実際の長期修繕計画数字とは差異が出ると思います。新たに計画が更新された場合は変更データを入力する必要があります。初期値は２０期に作成した概算計画の金額になっていますが、変更データを保存し再度読み込むことで計画が改定されても対応できます。</p>
 
             <h4>1. 20期作成データでシミュレーションする</h4>
             <div style="padding-left: 1em; margin-bottom: 15px;">
-                <p>この場合はデータ入力欄に改定額や修繕の時期・金額を入力すれば、下に試算結果が表示されます。20期作成計画は50期までのデータしかありませんので、単年支出内訳金額は5１期以降「０」となりますので開始期を変更する場合はご留意ください。</p>
+                <p>データ入力欄に改定額や修繕の時期・金額を入力すれば、下に試算結果が表示されます。<br>
+                20期作成計画は50期までのデータしかありませんので、単年支出金額は5１期以降「０」となりますので開始期を変更する場合はご留意ください。</p>
             </div>
 
-            <h4>2. 新たに修繕計画が改定された場合</h4>
+            <h4>2. 新たに作成された修繕計画で試算する</h4>
             <div style="padding-left: 1em; margin-bottom: 15px;">
-                <p style="margin-bottom: 8px;">作成した長期修繕計画総括表から初期データを入力する必要があります。</p>
+                <p style="margin-bottom: 8px;">作成した長期修繕計画総括表から初期データを入力する必要があります。<br>
+                <span class="highlight-text">長期修繕計画では金額は（千円）単位ですが、入力は（万円）単位としてください。</span></p>
                 
                 <div class="help-list-item">
                     <div class="help-list-mark">①</div>
-                    <div class="help-list-desc">「開始期」<br>「現在の積立金」<br>改定予定がある場合「何期」から「何円/㎡」にするか<br>を入力する。</div>
+                    <div class="help-list-desc">「開始期」・「現在の積立金」・改定予定がある場合「何期」から「何円/㎡」にするかを入力する。</div>
                 </div>
                 
                 <div class="help-list-item">
                     <div class="help-list-mark">②</div>
-                    <div class="help-list-desc">「期首繰越金残高」を入力する。</div>
+                    <div class="help-list-desc">「積立金繰越金額」：　長期修繕計画総括表から開始期の「積立金繰越金額」を入力する。</div>
                 </div>
-                <div class="help-sub-desc">期首繰越金残高は長期修繕計画総括表の一番下の「次年度繰越金」から開始期前年の金額を入力する。</div>
                 
                 <div class="help-list-item">
                     <div class="help-list-mark">③</div>
-                    <div class="help-list-desc">「主要な修繕・更新計画」の入力</div>
+                    <div class="help-list-desc">「主要な修繕・更新計画」：　「長期修繕計画総括表」からデータを探して主要な修繕・更新計画の「実施期」と「金額」を入力する。自動で消費税１０％が加算されます。</div>
                 </div>
                 <div class="help-sub-desc">
-                    「長期修繕計画総括表」からデータを探して主要な修繕・更新計画の「実施期」と「金額」を入力する。　<br>
-                    大規模修繕は&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;「１.屋根防水 ～ ７.共用内部」の合計額<br>
-                    エレベーター更新は「１４.昇降機」<br>
-                    機械式駐車場は&nbsp;&nbsp;&nbsp;&nbsp;「１６.立体駐車場設備」<br>
-                    給排水管更新は&nbsp;&nbsp;&nbsp;&nbsp;「８.給水設備・９.排水設備」<br>
-                    にデータが記載されています。<br>
-                    <span class="highlight-text">概算額は税抜きなので消費税１０％を加えた額を入力してください。</span><br>
-                    ドローン検査や屋根防水を別に実施するなどの場合は「追加工事」に時期と金額入力する。
+                    大規模修繕は &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 「１.屋根防水 ～ ７.共用内部」の合計金額<br>
+                    エレベーター更新は&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 「１４.昇降機」の金額<br>
+                    機械式駐車場は &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 「１６.立体駐車場設備」の金額<br>
+                    給排水管更新は &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 「８.給水設備・９.排水設備」の金額<br>
+                    ドローン検査や屋根防水を別に実施するなどの場合は「追加工事」に時期と金額入力する。<br>
+                    <span class="highlight-text">追加工事は消費税込みの金額を入力してください。</span>
                 </div>
                 
                 <div class="help-list-item">
                     <div class="help-list-mark">④</div>
-                    <div class="help-list-desc">「単年支出内訳の入力」</div>
-                </div>
-                <div class="help-sub-desc">
-                    「各期の単年支出内訳」の数値は「長期修繕計画総括表」の「支出年度合計」の各期の金額を入力します。　注意点としては<span class="highlight-text">大規模修繕・エレベーター更新・駐車場更新・給排水管更新がある年については、上記で入力した金額（税込み）を引いた金額を入力する必要があり、ここは少し混乱するかもしれません。</span>
+                    <div class="help-list-desc">「支出年度合計」：　長期修繕計画総括表から各期の「支出年度合計」の金額を入力します。</div>
                 </div>
             </div>
 
             <h4>３． 借入金や一時金</h4>
             <div style="padding-left: 1em; margin-bottom: 15px;">
-                <p>金融機関からの借入が発生した場合や一時金を徴収した場合は、追加工事の欄に「借入」「一時金」などのように入力し、金額にマイナスを付けて入力してください。</p>
+                <p>金融機関からの借入が発生した場合や一時金を徴収した場合は、追加工事の欄に「借入」「一時金」などのように入力し、<span class="highlight-text">金額にマイナスを付けて入力してください。</span></p>
             </div>
 
             <h4>４． データの保存と出力（右上ボタン）</h4>
@@ -189,7 +184,7 @@
 
 <div class="container" id="capture-area">
     <div class="header-area">
-        <h2>🏢 LMコスタレジデンス浦和 修繕積立金シミュレーター</h2>
+        <h2>🏢 LMコスタレジデンス浦和 修繕積立金シミュレーター（20期version)</h2>
         <div class="action-buttons" data-html2canvas-ignore="true">
             <button class="btn btn-help" onclick="document.getElementById('helpModal').style.display='block'">📖 使い方</button>
             <button class="btn btn-save" onclick="saveData()">💾 データ保存</button>
@@ -203,11 +198,11 @@
         <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 8px 0; border: 1px solid transparent;">
             <div class="input-group">
                 <label>開始期</label>
-                <input type="number" id="startP" value="21" style="width: 70px;" oninput="initManualInputs(); updateManualAndCalc();">
+                <input type="number" id="startP" value="20" style="width: 70px;" oninput="initManualInputs(); updateManualAndCalc();">
             </div>
             <div class="input-group">
-                <label>期首繰越金残高 (万円)</label>
-                <input type="number" id="bal" value="2611.2" step="0.1" style="width: 120px;" oninput="calc()">
+                <label>積立金繰越金額 (万円)</label>
+                <input type="number" id="bal" value="3232.7" step="0.1" style="width: 120px;" oninput="calc()">
             </div>
             <div class="input-group">
                 <label>延べ床面積 (㎡)</label>
@@ -229,42 +224,42 @@
         </div>
     </div>
 
-    <h3>🛠 主要な修繕の時期とコスト<span class="note">※コストは概算額に消費税10％を加えたものを入力する</span></h3>
+    <h3>🛠 主要な修繕の時期とコスト<span class="note">※コストは総括表から対応する金額を（万円）にして入力してください。内部で消費税10%が加算されます。追加工事は消費税込みの金額を入力してください。</span></h3>
     
     <div class="setup" style="background: #fffbeb; border: 1px solid #fde68a; justify-content: flex-start; gap: 15px 35px; padding: 15px 25px;">
         <div class="input-group">
             <label style="color: #92400e;">2回目大規模修繕</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="repP2" value="27" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="repV2" value="12914" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+                <input type="number" id="repV2" value="11740" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">3回目大規模修繕</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="repP3" value="40" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="repV3" value="12201" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+                <input type="number" id="repV3" value="11091.8" step="0.1" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">EVリニューアル</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="evP" value="25" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="evV" value="3949" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+                <input type="number" id="evV" value="3590" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">駐車場更新</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="pkgP" value="29" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="pkgV" value="3630" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+                <input type="number" id="pkgV" value="3300" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         <div class="input-group">
             <label style="color: #92400e;">給排水管更新</label>
             <div style="white-space: nowrap; font-size: 13px;">
                 <input type="number" id="pipeP" value="45" style="width:50px;" oninput="updateManualAndCalc()"> 期
-                <input type="number" id="pipeV" value="9487" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
+                <input type="number" id="pipeV" value="8624.5" step="0.1" style="width:80px; margin-left:6px;" oninput="updateManualAndCalc()"> 万円
             </div>
         </div>
         
@@ -305,7 +300,7 @@
         </div>
     </div>
 
-    <h3>📝 各期の単年支出内訳 (万円)<span class="note">※数字は長期修繕計画総括表の支出年度合計から上記の主要な修繕コストは差し引いて金額を入力する。</span></h3>
+    <h3>📝 各期の支出年度合計 (万円)<span class="note">※数字は長期修繕計画総括表の「支出年度合計」を（万円）にして入力してください。</span></h3>
     <div id="manualInputs" class="manual-input-area"></div>
 
     <div class="chart-container">
@@ -335,11 +330,11 @@
 
 <script>
 const PERIODS = 30; 
-const BASE_YEAR = 2026;
-const BASE_PERIOD = 21;
+const BASE_YEAR = 2025;
+const BASE_PERIOD = 20;
 
 let baseExpensesMap = {
-    21: 550.6, 22: 253, 23: 0, 24: 0, 25: 520, 26: 55, 27: 386, 28: 286, 29: 0, 30: 1644.5, 
+    20: 1611.5, 21: 550.6, 22: 253, 23: 0, 24: 0, 25: 520, 26: 55, 27: 386, 28: 286, 29: 0, 30: 1644.5, 
     31: 1100, 32: 0, 33: 1001.5, 34: 55, 35: 1067, 36: 286.6, 37: 99, 38: 385, 39: 61.6, 40: 0, 
     41: 0, 42: 154, 43: 77, 44: 187, 45: 0, 46: 2222, 47: 0, 48: 649.5, 49: 198, 50: 0
 };
@@ -379,14 +374,14 @@ function updateManualAndCalc() {
         
         let total = baseExpensesMap[p] !== undefined ? baseExpensesMap[p] : 0;
         
-        // 既存の工事
-        if (p === parseInt(document.getElementById('repP2').value)) total += parseFloat(document.getElementById('repV2').value) || 0;
-        if (p === parseInt(document.getElementById('repP3').value)) total += parseFloat(document.getElementById('repV3').value) || 0;
-        if (p === parseInt(document.getElementById('evP').value)) total += parseFloat(document.getElementById('evV').value) || 0;
-        if (p === parseInt(document.getElementById('pkgP').value)) total += parseFloat(document.getElementById('pkgV').value) || 0;
-        if (p === parseInt(document.getElementById('pipeP').value)) total += parseFloat(document.getElementById('pipeV').value) || 0;
+        // 既存の工事（税抜き入力されているため1.1倍する）
+        if (p === parseInt(document.getElementById('repP2').value)) total += (parseFloat(document.getElementById('repV2').value) || 0) * 1.1;
+        if (p === parseInt(document.getElementById('repP3').value)) total += (parseFloat(document.getElementById('repV3').value) || 0) * 1.1;
+        if (p === parseInt(document.getElementById('evP').value)) total += (parseFloat(document.getElementById('evV').value) || 0) * 1.1;
+        if (p === parseInt(document.getElementById('pkgP').value)) total += (parseFloat(document.getElementById('pkgV').value) || 0) * 1.1;
+        if (p === parseInt(document.getElementById('pipeP').value)) total += (parseFloat(document.getElementById('pipeV').value) || 0) * 1.1;
         
-        // カスタム工事1〜5
+        // カスタム工事1〜5（そのまま加算）
         if (p === parseInt(document.getElementById('customP1').value)) total += parseFloat(document.getElementById('customV1').value) || 0;
         if (p === parseInt(document.getElementById('customP2').value)) total += parseFloat(document.getElementById('customV2').value) || 0;
         if (p === parseInt(document.getElementById('customP3').value)) total += parseFloat(document.getElementById('customV3').value) || 0;
@@ -407,12 +402,14 @@ function syncFromManual(idx) {
     const typedVal = parseFloat(document.getElementById(`exp_${idx}`).value) || 0;
     
     let largeRepairs = 0;
-    if (p === parseInt(document.getElementById('repP2').value)) largeRepairs += parseFloat(document.getElementById('repV2').value) || 0;
-    if (p === parseInt(document.getElementById('repP3').value)) largeRepairs += parseFloat(document.getElementById('repV3').value) || 0;
-    if (p === parseInt(document.getElementById('evP').value)) largeRepairs += parseFloat(document.getElementById('evV').value) || 0;
-    if (p === parseInt(document.getElementById('pkgP').value)) largeRepairs += parseFloat(document.getElementById('pkgV').value) || 0;
-    if (p === parseInt(document.getElementById('pipeP').value)) largeRepairs += parseFloat(document.getElementById('pipeV').value) || 0;
+    // 既存の工事（税抜き入力されているため1.1倍して差し引く額を計算）
+    if (p === parseInt(document.getElementById('repP2').value)) largeRepairs += (parseFloat(document.getElementById('repV2').value) || 0) * 1.1;
+    if (p === parseInt(document.getElementById('repP3').value)) largeRepairs += (parseFloat(document.getElementById('repV3').value) || 0) * 1.1;
+    if (p === parseInt(document.getElementById('evP').value)) largeRepairs += (parseFloat(document.getElementById('evV').value) || 0) * 1.1;
+    if (p === parseInt(document.getElementById('pkgP').value)) largeRepairs += (parseFloat(document.getElementById('pkgV').value) || 0) * 1.1;
+    if (p === parseInt(document.getElementById('pipeP').value)) largeRepairs += (parseFloat(document.getElementById('pipeV').value) || 0) * 1.1;
     
+    // カスタム工事1〜5（そのまま差し引く）
     if (p === parseInt(document.getElementById('customP1').value)) largeRepairs += parseFloat(document.getElementById('customV1').value) || 0;
     if (p === parseInt(document.getElementById('customP2').value)) largeRepairs += parseFloat(document.getElementById('customV2').value) || 0;
     if (p === parseInt(document.getElementById('customP3').value)) largeRepairs += parseFloat(document.getElementById('customV3').value) || 0;
@@ -440,6 +437,14 @@ function calc() {
     validPlans.sort((a, b) => a.p - b.p);
 
     function getIncomeData(p) {
+        if (p === 20) {
+            return { 
+                income: 990, 
+                displayPrice: currentPrice, 
+                isRevised: false, 
+                currentUnitPrice: currentPrice 
+            };
+        }
         if (p === 21) {
             return { 
                 income: 1410, 
@@ -509,7 +514,9 @@ function calc() {
 
     for (let i = 0; i < PERIODS; i++) {
         const p = startP + i;
-        const year = BASE_YEAR + (p - BASE_PERIOD);
+        const y1 = BASE_YEAR + (p - BASE_PERIOD);
+        const y2 = y1 + 1;
+        const yearStr = String(y1).slice(-2) + '/' + String(y2).slice(-2);
         const exp = currentPeriodExpenses[i] || 0;
         
         const incomeInfo = getIncomeData(p);
@@ -555,7 +562,7 @@ function calc() {
         if (currentBal < 0) row.className = 'neg';
         
         row.innerHTML = `
-            <td class="year-col">${year}</td>
+            <td class="year-col">${yearStr}</td>
             <td>${p}期</td>
             <td>${formatNum(incomeY)}</td>
             <td class="cum-col">${formatNum(cumIncome)}</td>
