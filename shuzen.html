@@ -202,12 +202,9 @@
             </div>
             <div class="input-group">
                 <label>積立金繰越金額 (万円)</label>
-                <input type="number" id="bal" value="3232.7" step="0.1" style="width: 120px;" oninput="calc()">
+                <input type="number" id="bal" value="4222.7" step="0.1" style="width: 120px;" oninput="calc()">
             </div>
-            <div class="input-group">
-                <label>延べ床面積 (㎡)</label>
-                <input type="number" id="area" value="3042.41" step="0.01" style="width: 100px;" oninput="calc()">
-            </div>
+            <input type="hidden" id="area" value="3042.41">
             <div class="input-group">
                 <label>現在の積立単価 (円/㎡)</label>
                 <input type="number" id="price" value="450" style="width: 90px;" oninput="calc()">
@@ -439,18 +436,20 @@ function calc() {
     function getIncomeData(p) {
         if (p === 20) {
             return { 
-                income: 990, 
-                displayPrice: currentPrice, 
+                income: 0, 
+                displayPrice: "336", 
                 isRevised: false, 
-                currentUnitPrice: currentPrice 
+                currentUnitPrice: 336,
+                displayIncome: ""
             };
         }
         if (p === 21) {
             return { 
                 income: 1410, 
-                displayPrice: currentPrice, 
-                isRevised: false, 
-                currentUnitPrice: currentPrice 
+                displayPrice: "336 → 450", 
+                isRevised: true, 
+                currentUnitPrice: 450,
+                displayIncome: formatNum(1410)
             };
         }
 
@@ -509,7 +508,7 @@ function calc() {
     zeroLine.style.top = zeroPos + "%";
 
     let currentBal = bal;
-    let cumIncome = 0;
+    let cumIncome = bal;
     let cumExp = 0;
 
     for (let i = 0; i < PERIODS; i++) {
@@ -521,6 +520,7 @@ function calc() {
         
         const incomeInfo = getIncomeData(p);
         const incomeY = incomeInfo.income;
+        const displayIncomeStr = incomeInfo.displayIncome !== undefined ? incomeInfo.displayIncome : formatNum(incomeY);
         
         cumIncome += incomeY;
         cumExp += exp;
@@ -554,7 +554,7 @@ function calc() {
             }
         });
 
-        if (incomeInfo.isRevised) {
+        if (incomeInfo.isRevised && p !== 21) {
             eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46; border-color:#a7f3d0;">改定 (${incomeInfo.currentUnitPrice}円)</span> `;
         }
 
@@ -564,7 +564,7 @@ function calc() {
         row.innerHTML = `
             <td class="year-col">${yearStr}</td>
             <td>${p}期</td>
-            <td>${formatNum(incomeY)}</td>
+            <td>${displayIncomeStr}</td>
             <td class="cum-col">${formatNum(cumIncome)}</td>
             <td>${exp !== 0 ? formatNum(exp) : '-'}</td>
             <td class="cum-col">${formatNum(cumExp)}</td>
