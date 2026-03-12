@@ -202,7 +202,7 @@
             </div>
             <div class="input-group">
                 <label>積立金繰越金額 (万円)</label>
-                <input type="number" id="bal" value="4222.7" step="0.1" style="width: 120px;" oninput="calc()">
+                <input type="number" id="bal" value="3232.7" step="0.1" style="width: 120px;" oninput="calc()">
             </div>
             <input type="hidden" id="area" value="3042.41">
             <div class="input-group">
@@ -436,11 +436,10 @@ function calc() {
     function getIncomeData(p) {
         if (p === 20) {
             return { 
-                income: 0, 
-                displayPrice: "336", 
-                isRevised: false, 
-                currentUnitPrice: 336,
-                displayIncome: ""
+                income: 990, 
+                displayPrice: "211 → 336", 
+                isRevised: true, 
+                currentUnitPrice: 336
             };
         }
         if (p === 21) {
@@ -448,8 +447,7 @@ function calc() {
                 income: 1410, 
                 displayPrice: "336 → 450", 
                 isRevised: true, 
-                currentUnitPrice: 450,
-                displayIncome: formatNum(1410)
+                currentUnitPrice: 450
             };
         }
 
@@ -554,7 +552,7 @@ function calc() {
             }
         });
 
-        if (incomeInfo.isRevised && p !== 21) {
+        if (incomeInfo.isRevised && p !== 20 && p !== 21) {
             eventsHtml += `<span class="event-badge" style="background:#d1fae5; color:#065f46; border-color:#a7f3d0;">改定 (${incomeInfo.currentUnitPrice}円)</span> `;
         }
 
